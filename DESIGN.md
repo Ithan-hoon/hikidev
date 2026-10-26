@@ -29,7 +29,7 @@ hikidev는 개발 에이전트가 아니라 **한 명의 개발자**다. 집에 
 ┌─ supervisor (작고 불변, pm2/작업 스케줄러) ─────────────────────┐
 │  오케스트레이터 재시작, 연속 크래시 시 정지 + 디스코드 웹훅        │
 │                                                                   │
-│  ┌─ orchestrator (hikidev 본체, Node/TS) ──────────────────────┐ │
+│  ┌─ orchestrator (hikidev 본체, Python) ───────────────────────┐ │
 │  │  · 심장박동: 주기적으로 hikidev를 깨움                        │ │
 │  │  · Runner: claude -p | Agent SDK  (설정으로 선택)             │ │
 │  │  · MCP 서버: notify / request_approval / read_inbox /         │ │
@@ -62,7 +62,7 @@ hikidev는 개발 에이전트가 아니라 **한 명의 개발자**다. 집에 
 
 | | `CliRunner` | `SdkRunner` |
 |---|---|---|
-| 방식 | `claude -p --resume <id> --output-format stream-json` 자식 프로세스 | Claude Agent SDK (TypeScript) |
+| 방식 | `claude -p --resume <id> --output-format stream-json` 자식 프로세스 (asyncio subprocess) | Claude Agent SDK (Python, `claude-agent-sdk`) |
 | 인증 | 사용자가 `claude` 로그인 (Max 구독 가능) | 사용자 본인 API 키 (`ANTHROPIC_API_KEY`) |
 | 한도 | 설정 없음. rate limit 에러 → 리셋 시각까지 잠 | 설정에서 일일 예산(USD), 초과 시 sleep/stop |
 | 기본값 | ✅ | |
@@ -72,6 +72,10 @@ hikidev는 개발 에이전트가 아니라 **한 명의 개발자**다. 집에 
 - CLI: 수정하지 않은 Claude Code 바이너리에 사용자가 자기 구독으로 로그인하는 것은 허용.
 - 단 "Pro/Max 한도는 ordinary, individual usage를 가정"이라는 문구가 있음 → 24시간 상시 가동은 회색지대. 하루 가동 시간 자체 상한을 둔다 (설정 `max_active_hours_per_day`).
 - hikidev는 **토큰·키를 중개하지 않는다.** 로그인은 사용자 몫. 로그인 안 돼 있으면 안내만 한다.
+
+### 언어: Python
+- 오케스트레이터·킷 모두 **Python 3.12+** (uv, pytest, ruff). 2026-10-27 Node/TS에서 변경.
+- 이유: 주인의 기존 프로젝트와 디스코드 모듈이 전부 Python이라 킷 재사용과 유지보수가 쉽다. `claude -p`는 자식 프로세스라 언어 무관, Agent SDK도 Python판이 있다. Node의 장점은 `npx` 배포뿐이었고 `uvx`로 대체된다.
 
 ### 설정 예시
 ```yaml
@@ -264,7 +268,7 @@ supervisor는 작고 절대 안 바뀌는 프로세스. pm2 또는 Windows 작�
 - 라이선스: **MIT**. (특허는 고려하지 않음 — 컨셉이 일반적이라 의미 없음)
 - hikidev가 만드는 프로젝트의 라이선스는 별개, 걔가 프로젝트마다 고른다 (self.md 취향).
 - 이름: 공식 정책상 "Claude Code"를 제품명에 쓸 수 없음. hikidev는 문제없음.
-- 설치: `npx hikidev init` → 설정 파일 생성, `claude` 로그인 여부 확인, Docker 확인, 디스코드 채널 설정.
+- 설치: `uvx hikidev init` (또는 `pipx install hikidev`) → 설정 파일 생성, `claude` 로그인 여부 확인, Docker 확인, 디스코드 채널 설정.
 - 지원 OS: Windows(WSL2/Docker Desktop) 우선, Linux/macOS는 Docker만 있으면 동일.
 - 안전한 기본값: runner=cli, 레포 private, 승인 큐 ON, 사설망 차단 ON, 하루 가동 8시간.
 
