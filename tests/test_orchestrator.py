@@ -199,3 +199,16 @@ async def test_run_once_handles_relay_without_discord(home: HikidevHome, cfg: Co
     await orch.run(once=True)
     assert home.drain_outbox() == []  # relay 가 비웠다 (로그로)
     assert home.load_state().heartbeats == 1
+
+
+async def test_lost_session_restarts_fresh(home: HikidevHome, cfg: Config) -> None:
+    lost = {**_result("s1"), "subtype": "error_during_execution", "is_error": True, "result": "", "num_turns": 0}
+    runner = FakeRunner([_result("s1")], [lost], [_result("s2")])
+    orch = Orchestrator(home, cfg, runner=runner)
+    await orch.heartbeat()
+    s = await orch.heartbeat()
+    assert s is not None and s.status == "ok"
+    assert runner.calls[1].resume == "s1" and runner.calls[2].resume is None
+    assert home.current_session() == "s2"
+    st = home.load_state()
+    assert st.heartbeats == 2 and st.consecutive_failures == 0

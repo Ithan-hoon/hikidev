@@ -266,6 +266,14 @@ class Orchestrator:
             elapsed = time.monotonic() - t0
             await self.relay.stop_polling()
 
+        lost = summary.error is not None and summary.error.code == "api_error" and not summary.num_turns
+        if resume and summary.status == "error" and lost:
+            # 다른 머신(호스트↔컨테이너)으로 옮기면 세션 기록이 없어 resume 이 즉시 실패한다 → 새 세션으로 한 번 더
+            log.warning("세션 %s 을(를) 이어갈 수 없다 — 새 세션으로 다시 시작", resume)
+            self.home.set_session(None, reason="session_lost")
+            self.home.append_log(today, {"type": "hikidev", "event": "session_lost", "at": now_iso(), "resume": resume})
+            return await self.heartbeat()
+
         # ── 사후 처리 ──
         state = self.home.load_state()  # relay 가 건드렸을 수도
         self._roll_date(state, today)
