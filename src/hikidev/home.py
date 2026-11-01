@@ -88,7 +88,6 @@ class HikidevHome:
         self.mcp_json = self.dot / "mcp.json"
         self.notion_state_json = self.dot / "notion-mirror.json"
         self.config_yaml = self.root / "hikidev.yaml"
-        self.env_file = self.root / ".env"
 
     # ── init ─────────────────────────────────────────────────
     def init(self, *, name: str = "hikidev", values: dict[str, str] | None = None, force: bool = False) -> list[str]:
@@ -120,7 +119,6 @@ class HikidevHome:
             self.self_md: render("self.md"),
             self.ideas_md: render("ideas.md"),
             self.config_yaml: render("hikidev.yaml"),
-            self.root / ".env.example": (TEMPLATES / "env.example").read_text(encoding="utf-8"),
             self.sessions_json: "{}\n",
             self.approvals_json: "[]\n",
             self.state_json: json.dumps(asdict(State()), ensure_ascii=False, indent=2) + "\n",

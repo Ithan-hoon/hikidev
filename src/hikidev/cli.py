@@ -35,8 +35,8 @@ def _load(args: argparse.Namespace):
     home = _home(args)
     if not home.is_initialized():
         sys.exit(f"hikidev home 이 아닙니다: {home.root}\n먼저 `hikidev init {home.root}`")
-    load_env(home.env_file)
-    load_env(Path.cwd() / ".env")
+    # 토큰은 home 밖에 둔다 — 세션(hikidev)의 cwd 가 home 이라 안에 두면 걔가 읽는다
+    load_env(args.env or Path.cwd() / ".env")
     return home, load_config(home.config_yaml)
 
 
@@ -63,7 +63,7 @@ def cmd_init(args: argparse.Namespace) -> None:
     print("\n다음:")
     print(f"  1. {home.root / 'self.md'} — 관심 분야·스택·성향 초기값")
     print(f"  2. {home.root / 'hikidev.yaml'} — 디스코드 채널 ID, 심장박동 주기")
-    print(f"  3. {home.root / '.env'} — .env.example 을 복사해서 토큰")
+    print("  3. .env (home 밖, hikidev 를 실행하는 폴더) — .env.example 을 복사해서 토큰")
     print("  4. claude 로그인 확인 (`claude login`)")
     print(f"  5. hikidev run --home {home.root} --once")
 
@@ -210,6 +210,7 @@ def build_parser() -> argparse.ArgumentParser:
     ):
         p = sub.add_parser(name, help=help_)
         p.add_argument("--home", default=None, help="작업 폴더 (기본: $HIKIDEV_HOME 또는 현재 폴더)")
+        p.add_argument("--env", default=None, help=".env 경로 (기본: 현재 폴더의 .env)")
         p.set_defaults(fn=fn)
         if name == "run":
             p.add_argument("--once", action="store_true", help="심장박동 한 번만")

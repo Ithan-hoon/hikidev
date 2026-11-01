@@ -11,7 +11,7 @@ def test_init_and_status(tmp_path: Path, capsys) -> None:
     out = capsys.readouterr().out
     assert "self.md" in out
     assert "ithan's hikidev" in (root / "self.md").read_text(encoding="utf-8")
-    main(["status", "--home", str(root)])
+    main(["status", "--home", str(root), "--env", str(tmp_path / "no.env")])
     out = capsys.readouterr().out
     assert "ithan's hikidev" in out and "다음은 새 세션" in out
 

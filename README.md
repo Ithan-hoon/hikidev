@@ -18,8 +18,9 @@ hikidev는 개발 에이전트가 아니라 **한 명의 개발자**다. 집에 
 
 ```bash
 uv sync
-uv run hikidev init ./home        # 기억 구조 + hikidev.yaml + .env.example 생성
-# ./home/hikidev.yaml 과 ./home/.env 편집 (디스코드 채널 ID, 토큰)
+uv run hikidev init ./home        # 기억 구조 + hikidev.yaml 생성
+cp .env.example .env              # 토큰은 home 밖(.env)에 — 걔 방 안에 주인 토큰을 두지 않는다
+# ./home/hikidev.yaml 편집 (디스코드 채널 ID 등)
 uv run hikidev run --home ./home --once   # 심장박동 1회
 uv run hikidev run --home ./home          # 계속
 uv run hikidev status --home ./home
@@ -32,7 +33,7 @@ uv run hikidev log -f --home ./home
 
 | 명령 | 하는 일 |
 |---|---|
-| `hikidev init [home]` | 작업 폴더 생성: `self.md`, `ideas.md`, `inbox/`, `journal/`, `projects/`, `.hikidev/`, `hikidev.yaml`, `.env.example` |
+| `hikidev init [home]` | 작업 폴더 생성: `self.md`, `ideas.md`, `inbox/`, `journal/`, `projects/`, `.hikidev/`, `hikidev.yaml` |
 | `hikidev run [--once]` | 심장박동 루프. `--once`는 한 번만 |
 | `hikidev status` | 세션·오늘 가동 시간·승인 큐·마지막 심장박동 |
 | `hikidev log [-f]` | `.hikidev/logs/날짜.jsonl` 보기 |

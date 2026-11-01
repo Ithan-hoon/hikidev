@@ -8,6 +8,8 @@ from hikidev.prompt import HeartbeatContext, Signals, emergency_handoff, heartbe
 
 
 def test_load_config_defaults_and_override(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("DISCORD_CHANNEL_ID", raising=False)
+    monkeypatch.delenv("DISCORD_OWNER_ID", raising=False)
     p = tmp_path / "hikidev.yaml"
     p.write_text("name: me\nschedule:\n  heartbeat_minutes: 5\ndiscord:\n  channel_id: 42\n", encoding="utf-8")
     cfg = load_config(p)
