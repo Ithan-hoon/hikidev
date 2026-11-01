@@ -76,10 +76,13 @@ notion:
 ## Docker
 
 ```bash
+# 처음 한 번: 킷(private) 받기용 자격증명 → docker/git-credentials 에 `https://<id>:<token>@github.com` 한 줄
 docker compose build
-docker compose run --rm hikidev hikidev init /home/hikidev/home   # 처음 한 번
-docker compose up -d
+docker compose run --rm hikidev hikidev-check-network                              # 사설망 차단·인터넷·claude 확인
+docker compose run --rm hikidev hikidev run --home /home/hikidev/home --once --log-level info   # 심장박동 1회
+docker compose up -d                                                                # 상시 (supervise)
 ```
+호스트에서 쓰던 `home/`을 그대로 마운트한다. 세션 기록은 머신마다 달라서 첫 컨테이너 심장박동은 새 세션으로 시작한다(자동).
 `home/`만 컨테이너에 마운트된다. 컨테이너 시작 시 iptables로 사설 IP 대역(10/8, 172.16/12, 192.168/16, 169.254/16)을 막는다. claude 로그인은 호스트에서 `claude setup-token`으로 받은 장기 토큰을 `.env`의 `CLAUDE_CODE_OAUTH_TOKEN`에 넣는다 (Max 구독, API 키 안 씀).
 
 ## 라이선스
