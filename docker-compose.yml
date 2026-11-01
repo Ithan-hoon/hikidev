@@ -1,0 +1,33 @@
+# hikidev 의 방.
+#   docker compose build
+#   docker compose run --rm hikidev hikidev init /home/hikidev/home --name "ithan's hikidev"   # 처음 한 번
+#   docker compose run --rm hikidev hikidev-check-network                                        # 사설망 차단 확인
+#   docker compose up -d
+services:
+  hikidev:
+    build:
+      context: .
+      secrets:
+        - git_credentials          # private 킷 레포 받기용 (빌드 때만)
+    image: hikidev:local
+    env_file: .env                 # DISCORD_* / NOTION_* / GITHUB_TOKEN / CLAUDE_CODE_OAUTH_TOKEN
+    environment:
+      HIKIDEV_HOME: /home/hikidev/home
+      CLAUDE_CLI_PATH: claude      # .env 의 Windows 경로를 덮는다
+      HIKIDEV_BLOCK_PRIVATE: "1"
+    volumes:
+      - ./home:/home/hikidev/home  # 걔 방. 이것만 마운트한다
+      # claude 로그인 방식 (b): 호스트 로그인 상태를 그대로 쓸 때. (a) 는 .env 의 CLAUDE_CODE_OAUTH_TOKEN
+      # - ${USERPROFILE:-~}/.claude:/home/hikidev/.claude
+    cap_add:
+      - NET_ADMIN                  # entrypoint 의 iptables (사설 IP 대역 차단)
+    dns:                           # 홈 라우터(사설 IP) DNS 를 안 타게 공개 DNS 로
+      - 1.1.1.1
+      - 8.8.8.8
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+secrets:
+  git_credentials:
+    # 한 줄:  https://<github-user>:<token>@github.com   (hikidev 전용 machine account 토큰, kits 읽기 권한)
+    file: ./docker/git-credentials
