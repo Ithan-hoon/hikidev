@@ -77,7 +77,7 @@ docker compose build
 docker compose run --rm hikidev hikidev init /home/hikidev/home   # 처음 한 번
 docker compose up -d
 ```
-`home/`만 컨테이너에 마운트된다. 컨테이너 시작 시 iptables로 사설 IP 대역(10/8, 172.16/12, 192.168/16, 169.254/16)을 막는다. claude 로그인은 `claude setup-token`으로 받은 토큰을 `.env`의 `CLAUDE_CODE_OAUTH_TOKEN`에 넣거나, 호스트 `~/.claude`를 마운트한다 ([docker-compose.yml](docker-compose.yml) 참고).
+`home/`만 컨테이너에 마운트된다. 컨테이너 시작 시 iptables로 사설 IP 대역(10/8, 172.16/12, 192.168/16, 169.254/16)을 막는다. claude 로그인은 호스트에서 `claude setup-token`으로 받은 장기 토큰을 `.env`의 `CLAUDE_CODE_OAUTH_TOKEN`에 넣는다 (Max 구독, API 키 안 씀).
 
 ## 라이선스
 

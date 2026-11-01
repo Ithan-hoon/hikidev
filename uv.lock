@@ -559,12 +559,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "kits-config", editable = "../kits/packages/config" },
-    { name = "kits-discord", editable = "../kits/packages/discord" },
-    { name = "kits-logger", editable = "../kits/packages/logger" },
-    { name = "kits-notion", editable = "../kits/packages/notion" },
-    { name = "kits-runner", editable = "../kits/packages/runner" },
-    { name = "kits-supervisor", editable = "../kits/packages/supervisor" },
+    { name = "kits-config", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fconfig&tag=v0.1.0" },
+    { name = "kits-discord", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fdiscord&tag=v0.1.0" },
+    { name = "kits-logger", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Flogger&tag=v0.1.0" },
+    { name = "kits-notion", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fnotion&tag=v0.1.0" },
+    { name = "kits-runner", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Frunner&tag=v0.1.0" },
+    { name = "kits-supervisor", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fsupervisor&tag=v0.1.0" },
     { name = "mcp", specifier = ">=2.0" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
@@ -663,50 +663,41 @@ wheels = [
 [[package]]
 name = "kits-config"
 version = "0.1.0"
-source = { editable = "../kits/packages/config" }
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fconfig&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
 
 [[package]]
 name = "kits-discord"
 version = "0.1.0"
-source = { editable = "../kits/packages/discord" }
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fdiscord&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
 dependencies = [
     { name = "discord-py" },
 ]
 
-[package.metadata]
-requires-dist = [{ name = "discord-py", specifier = ">=2.4" }]
-
 [[package]]
 name = "kits-logger"
 version = "0.1.0"
-source = { editable = "../kits/packages/logger" }
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Flogger&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
 
 [[package]]
 name = "kits-notion"
 version = "0.1.0"
-source = { editable = "../kits/packages/notion" }
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fnotion&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
 
 [[package]]
 name = "kits-runner"
 version = "0.1.0"
-source = { editable = "../kits/packages/runner" }
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Frunner&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
 dependencies = [
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
 
-[package.metadata]
-requires-dist = [{ name = "tzdata", marker = "sys_platform == 'win32'", specifier = ">=2024.1" }]
-
 [[package]]
 name = "kits-supervisor"
 version = "0.1.0"
-source = { editable = "../kits/packages/supervisor" }
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fsupervisor&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
 dependencies = [
     { name = "kits-discord" },
 ]
-
-[package.metadata]
-requires-dist = [{ name = "kits-discord", editable = "../kits/packages/discord" }]
 
 [[package]]
 name = "mcp"
