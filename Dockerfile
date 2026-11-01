@@ -1,10 +1,12 @@
 # hikidev 의 방. python + uv + claude CLI + 킷(고정 태그) + hikidev.
 # 빌드:  docker compose build
 #        (킷 레포가 private 이라 빌드 시 git 자격증명이 필요하다 — docker-compose.yml 의 secrets 참고)
+ARG UV_VERSION=0.13.5
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
+
 FROM python:3.12-slim
 
 ARG CLAUDE_VERSION=2.1.314
-ARG UV_VERSION=0.13.5
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
@@ -15,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       git curl ca-certificates iptables util-linux openssh-client ripgrep jq \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=ghcr.io/astral-sh/uv:${UV_VERSION} /uv /usr/local/bin/uv
+COPY --from=uv /uv /usr/local/bin/uv
 
 RUN useradd -m -s /bin/bash hikidev
 
