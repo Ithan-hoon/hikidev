@@ -28,12 +28,12 @@ packages = ["src/hikidev"]
 
 # 킷은 고정 태그로 설치한다. 올릴 때는 태그만 바꾸고 `uv lock`.
 [tool.uv.sources]
-kits-config = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.0", subdirectory = "packages/config" }
-kits-logger = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.0", subdirectory = "packages/logger" }
-kits-runner = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.0", subdirectory = "packages/runner" }
-kits-discord = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.0", subdirectory = "packages/discord" }
-kits-supervisor = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.0", subdirectory = "packages/supervisor" }
-kits-notion = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.0", subdirectory = "packages/notion" }
+kits-config = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.1", subdirectory = "packages/config" }
+kits-logger = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.1", subdirectory = "packages/logger" }
+kits-runner = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.1", subdirectory = "packages/runner" }
+kits-discord = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.1", subdirectory = "packages/discord" }
+kits-supervisor = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.1", subdirectory = "packages/supervisor" }
+kits-notion = { git = "https://github.com/Ithan-hoon/kits.git", tag = "v0.1.1", subdirectory = "packages/notion" }
 
 [dependency-groups]
 dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "ruff>=0.8"]

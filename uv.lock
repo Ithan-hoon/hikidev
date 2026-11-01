@@ -559,12 +559,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "kits-config", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fconfig&tag=v0.1.0" },
-    { name = "kits-discord", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fdiscord&tag=v0.1.0" },
-    { name = "kits-logger", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Flogger&tag=v0.1.0" },
-    { name = "kits-notion", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fnotion&tag=v0.1.0" },
-    { name = "kits-runner", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Frunner&tag=v0.1.0" },
-    { name = "kits-supervisor", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fsupervisor&tag=v0.1.0" },
+    { name = "kits-config", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fconfig&tag=v0.1.1" },
+    { name = "kits-discord", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fdiscord&tag=v0.1.1" },
+    { name = "kits-logger", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Flogger&tag=v0.1.1" },
+    { name = "kits-notion", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fnotion&tag=v0.1.1" },
+    { name = "kits-runner", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Frunner&tag=v0.1.1" },
+    { name = "kits-supervisor", git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fsupervisor&tag=v0.1.1" },
     { name = "mcp", specifier = ">=2.0" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
@@ -663,12 +663,12 @@ wheels = [
 [[package]]
 name = "kits-config"
 version = "0.1.0"
-source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fconfig&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fconfig&tag=v0.1.1#d3a3ec98efbe0f782c104a8aa1bc4155f1be7224" }
 
 [[package]]
 name = "kits-discord"
-version = "0.1.0"
-source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fdiscord&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
+version = "0.1.1"
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fdiscord&tag=v0.1.1#d3a3ec98efbe0f782c104a8aa1bc4155f1be7224" }
 dependencies = [
     { name = "discord-py" },
 ]
@@ -676,17 +676,17 @@ dependencies = [
 [[package]]
 name = "kits-logger"
 version = "0.1.0"
-source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Flogger&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Flogger&tag=v0.1.1#d3a3ec98efbe0f782c104a8aa1bc4155f1be7224" }
 
 [[package]]
 name = "kits-notion"
 version = "0.1.0"
-source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fnotion&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fnotion&tag=v0.1.1#d3a3ec98efbe0f782c104a8aa1bc4155f1be7224" }
 
 [[package]]
 name = "kits-runner"
-version = "0.1.0"
-source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Frunner&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
+version = "0.1.1"
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Frunner&tag=v0.1.1#d3a3ec98efbe0f782c104a8aa1bc4155f1be7224" }
 dependencies = [
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
@@ -694,7 +694,7 @@ dependencies = [
 [[package]]
 name = "kits-supervisor"
 version = "0.1.0"
-source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fsupervisor&tag=v0.1.0#c41c77a2654da80b6fcd05990bb5e31ba27d060f" }
+source = { git = "https://github.com/Ithan-hoon/kits.git?subdirectory=packages%2Fsupervisor&tag=v0.1.1#d3a3ec98efbe0f782c104a8aa1bc4155f1be7224" }
 dependencies = [
     { name = "kits-discord" },
 ]

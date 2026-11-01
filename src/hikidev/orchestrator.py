@@ -61,9 +61,9 @@ class Orchestrator:
             from kits_runner import SdkRunner
 
             return SdkRunner(daily_budget_usd=self.cfg.budget.daily_usd)
-        from .runner import HikidevRunner
+        from kits_runner import CliRunner
 
-        return HikidevRunner(system_prompt_file=self.home.dot / "system-prompt.md")
+        return CliRunner()
 
     # ── 루프 ─────────────────────────────────────────────────
     async def run(self, *, once: bool = False) -> None:
@@ -213,17 +213,21 @@ class Orchestrator:
         )
         prompt = heartbeat_prompt(self.home, ctx)
         s = self.cfg.session
+        # 시스템 프롬프트는 파일로 (인자 길이·줄바꿈 안전), MCP 는 우리 mcp.json 만 (주인 claude.ai 커넥터 차단)
+        sp_file = self.home.dot / "system-prompt.md"
+        sp_file.write_text(
+            system_prompt(self.cfg.name, self.home.root, self.cfg.discord.owner_id, self.cfg.language), encoding="utf-8"
+        )
         opts = RunOptions(
             prompt=prompt,
             resume=resume,
             cwd=str(self.home.root),
             model=s.model,
             max_turns=s.max_turns,
-            append_system_prompt=system_prompt(
-                self.cfg.name, self.home.root, self.cfg.discord.owner_id, self.cfg.language
-            ),
+            append_system_prompt_file=str(sp_file),
             permission_mode=s.permission_mode,
             mcp_config=self.write_mcp_config(),
+            strict_mcp_config=True,
             env=dict(SESSION_ENV_BLANK),
             timeout_s=s.timeout_minutes * 60,
         )

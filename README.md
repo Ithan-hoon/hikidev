@@ -30,7 +30,7 @@ uv run hikidev status --home home
 uv run hikidev log -f --home home
 ```
 
-`claude`가 PATH에 없으면 `.env`에 `CLAUDE_CLI_PATH`를 적는다. Windows의 npm `claude.cmd` shim은 자동으로 그 안의 `claude.exe`로 바꿔 실행한다 (cmd.exe가 줄바꿈 있는 인자를 잘라먹기 때문).
+`claude`가 PATH에 없으면 `.env`에 `CLAUDE_CLI_PATH`를 적는다. Windows의 npm `claude.cmd` shim은 킷이 그 안의 `claude.exe`로 바꿔 실행한다.
 
 ## 명령
 

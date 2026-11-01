@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 from kits_runner import RunnerEvent, RunOptions, events_from_json
 
@@ -66,8 +67,11 @@ async def test_first_heartbeat_new_session(home: HikidevHome, cfg: Config) -> No
     assert s is not None and s.status == "ok"
     o = runner.calls[0]
     assert o.resume is None and o.cwd == str(home.root) and o.mcp_config == str(home.mcp_json)
-    assert "### self.md" in o.prompt and "test hikidev" in (o.append_system_prompt or "")
-    assert o.permission_mode == "bypassPermissions" and o.env["DISCORD_BOT_TOKEN"] == ""
+    assert "### self.md" in o.prompt
+    assert o.append_system_prompt is None
+    assert "test hikidev" in Path(o.append_system_prompt_file).read_text(encoding="utf-8")
+    assert o.permission_mode == "bypassPermissions" and o.strict_mcp_config is True
+    assert o.env["DISCORD_BOT_TOKEN"] == ""
     assert home.current_session() == "s1"
     st = home.load_state()
     assert st.heartbeats == 1 and st.last_status == "ok" and st.last_context_tokens == 3000 and st.active_seconds >= 0
