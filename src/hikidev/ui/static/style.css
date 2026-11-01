@@ -268,9 +268,9 @@ details.card pre { white-space: pre-wrap; margin: 12px 0 0; }
 .stream-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--dline); font-size: 11px; color: var(--dmute); flex-wrap: wrap; }
 .legend { display: flex; gap: 12px; }
 .stream { padding: 14px 16px; font-size: 12.5px; line-height: 1.75; color: var(--fg-2); overflow: auto; max-height: calc(100vh - 300px); min-height: 440px; }
-.stream .ln { white-space: pre-wrap; word-break: break-word; }
+.stream .ln { display: grid; grid-template-columns: 8ch 9ch minmax(0, 1fr); gap: 0 10px; white-space: pre-wrap; word-break: break-word; }
 .stream .t { color: var(--dmute-2); }
-.stream .lb { display: inline-block; min-width: 9ch; }
+.stream .lb { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .c-system { color: var(--amber); }
 .c-denied { color: var(--amber); }
 .c-hikidev { color: var(--green); }
@@ -315,5 +315,7 @@ details.card pre { white-space: pre-wrap; margin: 12px 0 0; }
   .console { padding: 16px 16px 32px; gap: 14px; }
   .cards6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stream { font-size: 12px; padding: 12px; }
-  .stream .lb { min-width: 0; }
+  .stream .ln { grid-template-columns: 1fr; gap: 0; padding-bottom: 6px; }
+  .stream .t { display: inline; }
+  .stream .lb { display: inline; margin-left: 8px; }
 }

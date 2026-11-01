@@ -147,7 +147,7 @@ def test_retry_starts_merge_into_one_beat() -> None:
     ]
     st = data.day_stats(recs, TZ)
     assert len(st.beats) == 2
-    assert st.beats[0].at == "20:28" and "2번 시도" in st.beats[0].text
+    assert st.beats[0].at == "20:28" and st.beats[0].text.startswith("새 세션") and "재시도 1" in st.beats[0].text
     assert st.running
     # 오래 열려 있으면 죽은 것으로 본다
     st2 = data.day_stats(recs, TZ, now=datetime(2026, 11, 2, 1, 0, tzinfo=TZ), stale_minutes=30)

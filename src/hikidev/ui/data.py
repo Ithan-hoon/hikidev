@@ -143,16 +143,26 @@ def _project_summary(text: str) -> str:
             rest = [ln for ln in para.splitlines() if not re.match(r"\s*status\s*:", ln, re.I)]
             rest = [ln for ln in rest if ln.strip() and not ln.startswith(("#", "```", "|"))]
             if rest:
-                return " ".join(ln.strip() for ln in rest)[:240]
+                return _plain(" ".join(ln.strip() for ln in rest))
             continue
-        return para.replace("\n", " ")[:240]
+        return _plain(para.replace("\n", " "))
     return ""
 
 
-def _next_steps(text: str, limit: int = 3) -> list[str]:
+def _plain(s: str, n: int = 200) -> str:
+    """요약용: 마크다운 강조·코드 표시를 벗긴다."""
+    s = re.sub(r"\*\*(.+?)\*\*", r"\1", s)
+    s = re.sub(r"`(.+?)`", r"\1", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s if len(s) <= n else s[: n - 1] + "…"
+
+
+def _next_steps(text: str, limit: int = 2) -> list[str]:
     out = []
     for m in re.finditer(r"^\s*[-*]\s*\[ \]\s*(.+)$", text, re.M):
-        out.append(re.sub(r"\s+", " ", m.group(1)).strip())
+        item = _plain(m.group(1), 48)
+        # "길이표 RLE (0 반복, 직전값 반복) — 설명" → 설명은 뗀다
+        out.append(re.split(r"\s[—-]\s", item)[0].strip())
         if len(out) >= limit:
             break
     return out
@@ -209,8 +219,9 @@ def ideas(home: HikidevHome) -> list[Idea]:
         started = body.startswith("~~")
         clean = body.replace("~~", "")
         nm = re.search(r"\*\*(.+?)\*\*", clean)
-        name = nm.group(1) if nm else clean.split("—")[0].split("-")[0].strip()[:40]
-        out.append(Idea(name=name, text=clean, started=started))
+        if not nm:
+            continue  # 이름 없는 줄은 메모지 아이디어가 아니다
+        out.append(Idea(name=nm.group(1), text=clean, started=started))
     return out
 
 
@@ -468,7 +479,6 @@ def day_stats(
                 started = parse_iso(obj.get("at"), tz)
                 if open_beat is not None:
                     open_beat.attempts += 1
-                    open_beat.text = how
                 else:
                     open_beat = Beat(hm(started), how, "running", started=started)
                     st.beats.append(open_beat)
@@ -482,7 +492,7 @@ def day_stats(
                 status = str(obj.get("status") or "")
                 parts = [open_beat.text, f"{turns}턴", f"{int(obj.get('elapsed_s') or 0)}초"]
                 if open_beat.attempts > 1:
-                    parts.append(f"{open_beat.attempts}번 시도")
+                    parts.append(f"재시도 {open_beat.attempts - 1}")
                 if status != "ok":
                     parts.append(status)
                 if obj.get("sleep_until"):
@@ -572,7 +582,7 @@ def overview(home: HikidevHome, cfg: Config) -> Overview:
     elif state.sleep_until and (su := parse_iso(state.sleep_until, tz)) and su > now:
         mood, text = "sleeping", "자는 중"
         if state.sleep_note:
-            text += f" · {state.sleep_note}"
+            text += f" · {_short(state.sleep_note, 36)}"
     else:
         mood, text = "idle", "쉬는 중"
     if wake and not stats.running:
