@@ -1,11 +1,10 @@
 {% extends "base.html" %}
-{% block theme %}dark{% endblock %}
 {% block title %}{{ o.name }} — 관제실{% endblock %}
 {% block content %}
 <div class="console">
   <header class="console-header">
     <div class="row" style="gap:14px">
-      <span class="brandname">hikidev</span>
+      <span class="brandname serif">심장박동</span>
       <span class="dim small">{{ o.name }} · {{ cfg.timezone }} {{ o.now | hm }}</span>
     </div>
     <div class="badges">
@@ -40,7 +39,7 @@
       <div class="panel">
         <div class="k">PROJECT</div>
         {% if o.project %}
-        <div class="row between"><span class="strong">{{ o.project.name }}</span><span class="c-hikidev small">{{ o.project.status }}</span></div>
+        <div class="row between"><span class="strong">{{ o.project.name }}</span><span class="tag mono st-{{ o.project.status }}">{{ o.project.status }}</span></div>
         <div class="sans small muted">{{ o.project.summary }}{% if o.project.next_steps %} 다음: {{ o.project.next_steps | join(', ') }}.{% endif %}</div>
         {% else %}<div class="sans small muted">없음</div>{% endif %}
       </div>
@@ -57,15 +56,15 @@
         <div class="kv">
           <div><span>heartbeat_minutes</span><span>{{ cfg.schedule.heartbeat_minutes }}</span></div>
           <div><span>max_active_hours</span><span>{{ cfg.schedule.max_active_hours_per_day }}</span></div>
-          <div><span>max_turns</span><span class="c-denied">{{ cfg.session.max_turns }}</span></div>
-          <div><span>timeout_minutes</span><span class="c-denied">{{ cfg.session.timeout_minutes }}</span></div>
+          <div><span>max_turns</span><span class="warn">{{ cfg.session.max_turns }}</span></div>
+          <div><span>timeout_minutes</span><span class="warn">{{ cfg.session.timeout_minutes }}</span></div>
           <div><span>permission_mode</span><span>{{ mode_short }}</span></div>
           <div><span>context_threshold</span><span>{{ cfg.session.context_threshold }}</span></div>
         </div>
         <div class="row" style="gap:8px;margin-top:auto">
-          <a class="dbtn" href="/settings">편집</a>
-          <a class="dbtn" href="/settings#self">self.md</a>
-          <a class="dbtn" href="/">방 안</a>
+          <a class="btn ghost" href="/settings">편집</a>
+          <a class="btn ghost" href="/settings#self">self.md</a>
+          <a class="btn ghost" href="/">방 안</a>
         </div>
       </div>
     </aside>

@@ -5,6 +5,6 @@
   <div class="panel"><div class="k">RATE LIMIT 5H</div><div class="v">{% if stats.rate_5h is not none %}{{ (stats.rate_5h * 100) | round | int }}%{% else %}—{% endif %}</div><div class="bar"><i style="width:{{ ((stats.rate_5h or 0) * 100) | round | int }}%"></i></div></div>
   <div class="panel"><div class="k">CONTEXT</div><div class="v">{{ fmt_k(o.state.last_context_tokens) }}</div><div class="bar"><i class="{{ 'warn' if ctx_pct >= 60 else '' }}" style="width:{{ ctx_pct }}%"></i></div></div>
   <div class="panel"><div class="k">HEARTBEATS</div><div class="v">{{ stats.beats | length }}</div><div class="k" style="margin-top:10px">{{ stats.turns }} turns · {{ stats.elapsed_s }}s</div></div>
-  <div class="panel"><div class="k">DENIED</div><div class="v {{ 'c-denied' if stats.denied else '' }}">{{ stats.denied }}</div><div class="k" style="margin-top:10px">{{ stats.denied_last or '—' }}</div></div>
-  <div class="panel"><div class="k">FAILS / RESTARTS</div><div class="v">{{ o.state.consecutive_failures }} / {{ stats.session_restarts }}</div><div class="k" style="margin-top:10px">{{ o.state.last_status or '—' }}{% if o.session_id %} · {{ o.session_id[:8] }}{% endif %}</div></div>
+  <div class="panel"><div class="k">DENIED</div><div class="v {{ 'warn' if stats.denied else '' }}">{{ stats.denied }}</div><div class="k" style="margin-top:10px">{{ stats.denied_last or '—' }}</div></div>
+  <div class="panel"><div class="k">FAILS/RESTARTS</div><div class="v">{{ o.state.consecutive_failures }} / {{ stats.session_restarts }}</div><div class="k" style="margin-top:10px">{{ o.state.last_status or '—' }}{% if o.session_id %} · {{ o.session_id[:8] }}{% endif %}</div></div>
 </div>

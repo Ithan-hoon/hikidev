@@ -203,9 +203,9 @@ def test_room_shows_real_data(client: TestClient) -> None:
     assert "아이디어 2" in html and "받은 편지 1" in html and "승인 대기 1" in html
 
 
-def test_heartbeat_dark_and_stream(client: TestClient) -> None:
+def test_heartbeat_stream(client: TestClient) -> None:
     html = client.get("/heartbeat").text
-    assert 'data-theme="dark"' in html
+    assert 'data-theme="paper"' in html and 'class="stream-wrap"' in html
     assert "heartbeat start · new session" in html
     assert "notify → 허프만 붙임" in html
     assert "RATE LIMIT 5H" in html and "6%" in html
