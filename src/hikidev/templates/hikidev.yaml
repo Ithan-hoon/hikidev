@@ -1,0 +1,35 @@
+# hikidev 설정. 토큰은 .env 에.
+name: "{name}"
+runner: cli                 # cli | sdk (sdk 는 Phase 2)
+language: ko                # 일기·대화 언어
+timezone: Asia/Seoul
+
+budget:                     # sdk 일 때만 유효
+  daily_usd: 10
+  on_exceed: sleep          # sleep | stop
+
+schedule:
+  heartbeat_minutes: 30
+  max_active_hours_per_day: 8
+  rate_limit_fallback_minutes: 60
+
+session:
+  context_window_tokens: 200000
+  context_threshold: 0.85   # 넘으면 강제 새 채팅 (인수인계 = 마지막 journal + NOTES)
+  max_turns: 200
+  timeout_minutes: 120
+  permission_mode: bypassPermissions   # 자기 방 안이니까
+  max_consecutive_failures: 3
+
+discord:
+  channel_id: "{channel_id}"   # #hikidev (notify / inbox / 승인)
+  owner_id: "{owner_id}"       # 승인 버튼을 누를 수 있는 사람
+  approval_timeout_hours: 24
+
+notion:
+  mirror_journal: true         # journal → "📄 Progress Diary" (파일이 원본, 노션은 거울)
+  mapping:
+    title: 제목
+    date: 일시
+    summary: 텍스트
+    source: 텍스트 1
