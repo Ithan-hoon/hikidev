@@ -69,10 +69,19 @@ def cmd_init(args: argparse.Namespace) -> None:
 
 
 # ── run ──────────────────────────────────────────────────────
+def _apply_timezone(tz: str) -> None:
+    """yaml 의 timezone 을 프로세스 로컬 시간대로. 컨테이너(UTC)에서 journal 날짜·하루 가동 집계가 호스트와 맞게.
+    Windows 는 tzset 이 없어 시스템 시간대를 쓴다."""
+    if tz and hasattr(time, "tzset"):
+        os.environ["TZ"] = tz
+        time.tzset()
+
+
 def cmd_run(args: argparse.Namespace) -> None:
     from .orchestrator import Orchestrator
 
     home, cfg = _load(args)
+    _apply_timezone(cfg.timezone)
     _setup_logging(home, args.log_level)
     orch = Orchestrator(home, cfg)
     try:

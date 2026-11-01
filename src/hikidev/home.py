@@ -87,6 +87,8 @@ class HikidevHome:
         self.inbox_jsonl = self.dot / "inbox.jsonl"
         self.mcp_json = self.dot / "mcp.json"
         self.notion_state_json = self.dot / "notion-mirror.json"
+        self.notion_map_json = self.dot / "notion-map.json"
+        """journal 상대 경로 → Progress Diary 페이지 ID (호스트/컨테이너 공통)"""
         self.config_yaml = self.root / "hikidev.yaml"
 
     # ── init ─────────────────────────────────────────────────

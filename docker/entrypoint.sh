@@ -22,7 +22,7 @@ if [ "$(id -u)" = "0" ]; then
   exec setpriv --reuid=hikidev --regid=hikidev --init-groups --reset-env \
     env HOME=/home/hikidev PATH="$PATH" HIKIDEV_HOME="${HIKIDEV_HOME:-/home/hikidev/home}" \
         CLAUDE_CLI_PATH=claude PYTHONIOENCODING=utf-8 \
-        $(env | grep -E '^(DISCORD_|NOTION_|GITHUB_|CLAUDE_CODE_|ANTHROPIC_|HIKIDEV_)' | sed 's/^/ /') \
+        $(env | grep -E '^(DISCORD_|NOTION_|GITHUB_|CLAUDE_CODE_|ANTHROPIC_|HIKIDEV_|TZ=)' | sed 's/^/ /') \
     "$@"
 fi
 exec "$@"

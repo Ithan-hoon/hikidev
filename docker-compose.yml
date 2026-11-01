@@ -15,6 +15,7 @@ services:
       HIKIDEV_HOME: /home/hikidev/home
       CLAUDE_CLI_PATH: claude      # .env 의 Windows 경로를 덮는다
       HIKIDEV_BLOCK_PRIVATE: "1"
+      TZ: ${TZ:-Asia/Seoul}        # 로그·journal 날짜를 호스트와 맞춘다 (hikidev.yaml timezone 도 같이)
     volumes:
       - ./home:/home/hikidev/home  # 걔 방. 이것만 마운트한다
       # claude 로그인: 호스트에서 `claude setup-token` → .env 의 CLAUDE_CODE_OAUTH_TOKEN (확정, 2026-11-01)
