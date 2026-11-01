@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ name }} — 아이디어{% endblock %}
+{% block content %}
+<div class="page narrow">
+  <header class="page-header"><h1>아이디어</h1><span class="mono dim">{{ items | selectattr('started', 'equalto', false) | list | length }}개 대기 · {{ items | selectattr('started') | list | length }}개 시작</span></header>
+  <div class="eyebrow">ideas.md</div>
+  <article class="paper prose">{{ html | safe }}</article>
+</div>
+{% endblock %}

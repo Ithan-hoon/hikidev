@@ -1,0 +1,3 @@
+{% for l in lines %}<div class="ln"><span class="t">{{ l.at }}</span> <span class="c-{{ l.kind }} lb">{{ l.label }}</span> <span class="tx">{{ l.text }}</span></div>
+{% else %}<div class="ln"><span class="t">—</span> <span class="dim">{{ day }}.jsonl 없음</span></div>
+{% endfor %}{% if o.next_wake and not stats.running and day == o.today %}<div class="ln"><span class="t">—</span> <span class="dim">sleeping until {{ o.next_wake | hm }}</span></div>{% endif %}

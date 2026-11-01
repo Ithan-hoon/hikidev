@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ name }} — 설정{% endblock %}
+{% block content %}
+<div class="page narrow">
+  <header class="page-header"><h1>설정</h1><span class="mono dim">hikidev.yaml · self.md</span></header>
+  {% if saved %}<p class="flash ok">{{ saved }}</p>{% endif %}
+  {% if error %}<p class="flash err">{{ error }}</p>{% endif %}
+
+  <form method="post" action="/settings/yaml" class="card form">
+    <div class="eyebrow">hikidev.yaml</div>
+    <p class="muted small">값만 바꾼다. 주석은 그대로 남는다. 컨테이너의 hikidev 는 다음 심장박동부터 새 값을 읽는다 (heartbeat 주기는 지금 자고 있는 시간엔 바로 반영되지 않는다).</p>
+    {% set ns = namespace(sec='') %}
+    {% for f in fields %}
+      {% if f.section != ns.sec %}{% set ns.sec = f.section %}<h3 class="mono sec">{{ f.section }}</h3>{% endif %}
+      {% set key = f.section ~ '.' ~ f.key %}
+      {% set val = (form[key] if form is defined and key in form else values[key]) %}
+      <label class="field">
+        <span class="lbl">{{ f.label }} <code>{{ f.key }}</code></span>
+        {% if f.kind == 'choice' %}
+        <select name="{{ key }}">{% for c in f.choices %}<option value="{{ c }}" {{ 'selected' if c == val }}>{{ c }}</option>{% endfor %}</select>
+        {% elif f.kind == 'int' %}
+        <input class="mono" type="number" step="1" min="0" name="{{ key }}" value="{{ val }}">
+        {% elif f.kind == 'float' %}
+        <input class="mono" type="number" step="any" min="0" name="{{ key }}" value="{{ val }}">
+        {% else %}
+        <input class="mono" type="text" name="{{ key }}" value="{{ val }}">
+        {% endif %}
+        {% if f.help %}<span class="help">{{ f.help }}</span>{% endif %}
+      </label>
+    {% endfor %}
+    <div class="row" style="justify-content:flex-end;margin-top:8px"><button class="btn" type="submit">yaml 저장</button></div>
+  </form>
+
+  <form method="post" action="/settings/self" class="card form" id="self">
+    <div class="eyebrow">self.md</div>
+    <p class="muted small">이 파일은 hikidev 의 것이다. 주인이 손대면 <code>.hikidev/ui-changes.jsonl</code> 에 한 줄 남는다. 걔는 다음 박동에 바뀐 걸 읽는다.</p>
+    <textarea name="text" rows="28" spellcheck="false">{{ self_text }}</textarea>
+    <div class="row" style="justify-content:flex-end;margin-top:8px"><button class="btn" type="submit">self.md 저장</button></div>
+  </form>
+
+  <details class="card">
+    <summary class="eyebrow" style="cursor:pointer">hikidev.yaml 원문</summary>
+    <pre class="mono small">{{ yaml_text }}</pre>
+  </details>
+</div>
+{% endblock %}

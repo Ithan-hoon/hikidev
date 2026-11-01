@@ -1,0 +1,40 @@
+<div class="block">
+  <div class="eyebrow">지금 만드는 것</div>
+  {% if o.project %}
+  <div class="card project-card">
+    <div class="row between">
+      <a class="serif project-name" href="/projects?name={{ o.project.name }}">{{ o.project.name }}</a>
+      <span class="tag mono">{{ o.project.status }} · {{ o.project.days }}일째</span>
+    </div>
+    {% if o.project.summary %}<p class="summary">{{ o.project.summary }}</p>{% endif %}
+    {% if o.project.next_steps %}<p class="next">다음: {{ o.project.next_steps | join(', ') }}</p>{% endif %}
+  </div>
+  {% else %}
+  <div class="card"><p class="muted">아직 시작한 프로젝트가 없다.</p></div>
+  {% endif %}
+</div>
+
+<div class="block">
+  <div class="eyebrow">컨디션</div>
+  <div class="stats">
+    <div class="card stat"><div class="k">오늘 가동</div><div class="v mono">{{ fmt_duration(o.state.active_seconds if o.state.date == o.today else 0) }} <small>/ {{ o.active_cap }}h</small></div></div>
+    <div class="card stat"><div class="k">한도 (5h 창)</div><div class="v mono">{% if o.rate_5h is not none %}{{ (o.rate_5h * 100) | round | int }}%{% else %}—{% endif %}</div></div>
+    <div class="card stat"><div class="k">컨텍스트</div><div class="v mono">{{ fmt_k(o.state.last_context_tokens) }} <small>/ {{ fmt_k(o.context_window) }}</small></div></div>
+    <div class="card stat"><div class="k">연속 실패</div><div class="v mono{{ ' warn' if o.state.consecutive_failures else '' }}">{{ o.state.consecutive_failures }}</div></div>
+  </div>
+</div>
+
+<div class="block">
+  <div class="eyebrow">오늘의 박동</div>
+  <ol class="beats">
+    {% for b in o.stats.beats %}
+    <li class="beat-{{ b.status }}"><span class="mono t">{{ b.at }}</span><span>{{ b.text }}{% if b.status == 'running' %} <em>진행 중</em>{% endif %}</span></li>
+    {% endfor %}
+    {% if o.next_wake and not o.stats.running %}
+    <li class="beat-planned"><span class="mono t">{{ o.next_wake | hm }}</span><span class="dim">예정</span></li>
+    {% endif %}
+    {% if not o.stats.beats and not o.next_wake %}
+    <li><span class="mono t">—</span><span class="dim">오늘은 아직 박동이 없다</span></li>
+    {% endif %}
+  </ol>
+</div>

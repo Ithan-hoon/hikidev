@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ name }} — 프로젝트{% endblock %}
+{% block content %}
+<div class="page">
+  <header class="page-header"><h1>프로젝트</h1><span class="mono dim">{{ projects | length }}개</span></header>
+  <div class="split">
+    <nav class="list">
+      {% for p in projects %}
+      <a href="/projects?name={{ p.name }}" class="{{ 'on' if cur and cur.name == p.name else '' }}"><span class="serif">{{ p.name }}</span><span class="tag mono st-{{ p.status }}">{{ p.status }}</span></a>
+      {% else %}
+      <p class="muted">projects/ 가 비어 있다.</p>
+      {% endfor %}
+    </nav>
+    <section>
+      {% if cur %}
+      <div class="row between" style="align-items:baseline">
+        <div class="eyebrow">projects/{{ cur.name }}/NOTES.md</div>
+        <span class="tag mono st-{{ cur.status }}">{{ cur.status }} · {{ cur.days }}일째</span>
+      </div>
+      <article class="paper prose notes">{{ cur.html | safe }}</article>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ name }} — 받은 편지·승인{% endblock %}
+{% block content %}
+<div class="page">
+  <header class="page-header"><h1>받은 편지</h1><span class="mono dim">미읽음 {{ letters | selectattr('read', 'equalto', false) | list | length }}</span></header>
+  <p class="muted small">주인이 디스코드 #hikidev 에 쓴 글이 여기로 온다. 여기선 읽기만. 보내려면 디스코드에서.</p>
+  <div class="letters">
+    {% for l in letters %}
+    <article class="card letter {{ 'read' if l.read else 'unread' }}">
+      <div class="row between meta"><span><strong>{{ l.author or '?' }}</strong> <span class="dim">{{ l.read and '읽음' or '아직 안 읽음' }}</span></span><span class="mono dim">{{ l.at[:16].replace('T', ' ') }}</span></div>
+      <div class="prose">{{ l.body }}</div>
+    </article>
+    {% else %}
+    <div class="card"><p class="muted">받은 편지가 없다.</p></div>
+    {% endfor %}
+  </div>
+
+  <header class="page-header" id="approvals" style="margin-top:40px"><h1>승인</h1><span class="mono dim">대기 {{ approvals | selectattr('status', 'equalto', 'pending') | list | length }}</span></header>
+  <p class="muted small">hikidev 가 request_approval 로 올린 것. 결정은 디스코드 버튼으로.</p>
+  <div class="approvals">
+    {% for a in approvals %}
+    <article class="card approval ap-{{ a.status }}">
+      <div class="row between meta"><span class="tag mono">{{ a.status }}</span><span class="mono dim">{{ a.requested_at[:16].replace('T', ' ') }}</span></div>
+      <div class="action">{{ a.action }}</div>
+      <div class="why dim">{{ a.why }}</div>
+      {% if a.decided_at %}<div class="mono dim small">{{ a.decided_at[:16].replace('T', ' ') }}{% if a.by %} · {{ a.by }}{% endif %}</div>{% endif %}
+    </article>
+    {% else %}
+    <div class="card"><p class="muted">승인 요청이 없다.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

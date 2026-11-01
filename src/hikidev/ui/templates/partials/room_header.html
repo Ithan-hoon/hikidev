@@ -1,0 +1,10 @@
+<header class="room-header" id="room-header" hx-get="/partial/room-header" hx-trigger="every 30s" hx-swap="outerHTML">
+  <div class="titles">
+    <h1>{{ o.name }}</h1>
+    <span class="mono date">{{ o.date_label }}</span>
+  </div>
+  <div class="mood mood-{{ o.mood }}">
+    <span class="dot"></span>
+    <span>{{ o.mood_text }}</span>
+  </div>
+</header>

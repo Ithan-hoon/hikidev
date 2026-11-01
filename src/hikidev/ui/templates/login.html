@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ name }} — 들어가기{% endblock %}
+{% block shell %}
+<main class="login">
+  <form method="post" action="/login" class="card login-card">
+    <h1>{{ name }}</h1>
+    <p class="muted">걔의 방을 들여다보려면 비밀번호가 필요하다.</p>
+    <input type="hidden" name="next" value="{{ next }}">
+    <label>비밀번호
+      <input type="password" name="password" autofocus autocomplete="current-password">
+    </label>
+    {% if error %}<p class="err">비밀번호가 다르다.</p>{% endif %}
+    <button type="submit" class="btn">들어가기</button>
+  </form>
+</main>
+{% endblock %}

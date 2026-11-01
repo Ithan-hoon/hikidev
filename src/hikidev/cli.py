@@ -1,4 +1,4 @@
-"""hikidev CLI: init | run | status | log | mcp | supervise"""
+"""hikidev CLI: init | run | status | log | mcp | supervise | ui"""
 
 from __future__ import annotations
 
@@ -170,6 +170,14 @@ def cmd_mcp(args: argparse.Namespace) -> None:
     mcp_main(["--home", str(_home(args).root)])
 
 
+# ── ui ───────────────────────────────────────────────────────
+def cmd_ui(args: argparse.Namespace) -> None:
+    from .ui.app import serve
+
+    home, _ = _load(args)
+    serve(home, host=args.host, port=args.port)
+
+
 # ── supervise ────────────────────────────────────────────────
 def cmd_supervise(args: argparse.Namespace) -> None:
     from kits_discord import send_webhook
@@ -216,6 +224,7 @@ def build_parser() -> argparse.ArgumentParser:
         ("log", cmd_log, "로그"),
         ("mcp", cmd_mcp, "MCP 서버 (stdio)"),
         ("supervise", cmd_supervise, "supervisor 로 run 감시"),
+        ("ui", cmd_ui, "관찰 + 설정 웹 UI (pip extra: ui)"),
     ):
         p = sub.add_parser(name, help=help_)
         p.add_argument("--home", default=None, help="작업 폴더 (기본: $HIKIDEV_HOME 또는 현재 폴더)")
@@ -232,6 +241,9 @@ def build_parser() -> argparse.ArgumentParser:
         if name == "supervise":
             p.add_argument("--max-crashes", type=int, default=3)
             p.add_argument("--window-min", type=int, default=10)
+        if name == "ui":
+            p.add_argument("--host", default="0.0.0.0", help="HIKIDEV_UI_PASSWORD 가 없으면 127.0.0.1 로 강제")
+            p.add_argument("--port", type=int, default=8787)
     return ap
 
 
