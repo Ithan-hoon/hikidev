@@ -292,12 +292,12 @@ supervisor는 작고 절대 안 바뀌는 프로세스. pm2 또는 Windows 작�
 
 ## 15. 로드맵
 
-### Phase 0 — 킷 (킷방)
-1. `runner` (CliRunner 먼저, SdkRunner는 인터페이스만)
-2. `discord` (채널 라우팅, notify, inbox, 승인 버튼)
-3. `supervisor`
-4. `notion`
-5. 킷 완성본 개인 git 백업
+### Phase 0 — 킷 (킷방) ✅ 2026-11-01 완료
+1. ~~`runner`~~ CliRunner + `--resume` 실확인 (claude CLI 2.1.314)
+2. ~~`discord`~~ 봇 HIKIDEV, notify + 승인 버튼 실확인
+3. ~~`supervisor`~~ (웹훅 실전송은 미확인)
+4. ~~`notion`~~ Progress Diary 생성·갱신 실확인
+5. ~~백업~~ `Ithan-hoon/kits` private
 
 ### Phase 1 — MVP 본체 (본체방)
 - 심장박동 + CliRunner + MCP 서버(5개 도구) + 파일 기억 구조
@@ -325,7 +325,7 @@ supervisor는 작고 절대 안 바뀌는 프로세스. pm2 또는 Windows 작�
 
 ## 16. 미결 사항
 
-- 디스코드 기존 모듈이 라이브러리인지 서비스인지 → `discord` 킷 형태 결정 (킷방에서)
+- ~~디스코드 기존 모듈 형태~~ → 해결: `kits_discord` 봇 서비스(discord.py). 채널 `#hikidev`(notify/inbox/승인) + `#hikidev-alerts`(supervisor 웹훅). 2026-11-01 실연동 확인
+- ~~킷 레포 이름·배포 방식~~ → 해결: `Ithan-hoon/kits` (private), uv 워크스페이스, 패키지명 `kits_*`
 - 컨텍스트 사용량 임계치, 심장박동 주기, 하루 가동 시간 기본값 → 돌려보며 조정
-- hikidev 일기 → "📄 Progress Diary" DB로 확정. 속성(제목/일시/텍스트)에 프로젝트·컨디션 컬럼을 추가할지는 `notion` 킷 만들 때
-- 킷 레포 이름, 패키지 배포 방식 (git dependency vs 로컬 레지스트리) → 킷방에서
+- hikidev 일기 → "📄 Progress Diary" DB로 확정, `kits_notion` 미러 동작 확인. 프로젝트·컨디션 컬럼 추가 여부는 본체방에서
