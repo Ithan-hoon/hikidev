@@ -328,6 +328,7 @@ supervisor는 작고 절대 안 바뀌는 프로세스. pm2 또는 Windows 작�
 - ~~디스코드 기존 모듈 형태~~ → 해결: `kits_discord` 봇 서비스(discord.py). 채널 `#hikidev`(notify/inbox/승인) + `#hikidev-alerts`(supervisor 웹훅). 2026-11-01 실연동 확인
 - ~~킷 레포 이름·배포 방식~~ → 해결: `Ithan-hoon/kits` (private), uv 워크스페이스, 패키지명 `kits_*`
 - 컨텍스트 사용량 임계치, 심장박동 주기, 하루 가동 시간 기본값 → 돌려보며 조정
+- 컨테이너의 `~/.claude` 세션 저장소가 `home/` 밖이라 재빌드·재생성 뒤 첫 박동은 항상 새 세션 (2026-11-02 운영방 관찰). 설계상 인수인계(journal+NOTES)로 이어지니 치명적이진 않음. 옵션: 세션 저장소를 볼륨으로 유지할지, 지금처럼 "새 컨테이너 = 새 아침"으로 둘지 → 며칠 관찰 후 결정
 - (Phase 2) self.md 를 UI나 디스코드로 설정하는 방법 — 지금은 파일로만 (2026-11-01 주인 질문)
 - 컨테이너 claude 로그인: `claude setup-token` → `.env` `CLAUDE_CODE_OAUTH_TOKEN` 로 확정 (2026-11-01). API 키는 안 씀
 - hikidev 일기 → "📄 Progress Diary" DB로 확정, `kits_notion` 미러 동작 확인. 프로젝트·컨디션 컬럼 추가 여부는 본체방에서
