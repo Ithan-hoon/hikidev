@@ -19,6 +19,7 @@ src/hikidev/
   home.py         작업 폴더(HikidevHome): 경로, init, state/approvals/control/inbox 파일
   prompt.py       시스템 프롬프트 + 심장박동 프롬프트 조립
   orchestrator.py 심장박동 루프, 세션 실행, 로그, 강제 새 채팅, rate limit sleep
+  runner.py       CliRunner 서브클래스: claude.cmd→exe, 시스템 프롬프트 파일, --strict-mcp-config
   relay.py        MCP 서버 ↔ 오케스트레이터 파일 큐 (outbox/approvals) → 디스코드
   mcp_server.py   MCP stdio 서버 (notify / request_approval / read_inbox / new_chat / sleep_until)
   notion_mirror.py journal → "📄 Progress Diary"
@@ -41,3 +42,4 @@ MCP 서버는 `claude`의 자식 프로세스라 오케스트레이터와 메모
 ## 환경 주의 (Windows)
 - `claude`는 npm 글로벌(`%APPDATA%\npm\claude.cmd`). PATH에 없으면 `.env`에 `CLAUDE_CLI_PATH`.
 - 콘솔 cp949: 로그에 이모지는 피하거나 utf-8 재설정.
+- **cmd.exe shim 금지**: `cmd /c claude.cmd …`는 인자 속 줄바꿈에서 명령줄이 잘려 뒤 플래그(`--permission-mode`, `--mcp-config`)가 사라진다. `runner.py`가 exe 직접 실행 + 시스템 프롬프트 파일로 우회. 킷 runner에도 올릴 것.

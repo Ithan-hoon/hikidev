@@ -61,9 +61,9 @@ class Orchestrator:
             from kits_runner import SdkRunner
 
             return SdkRunner(daily_budget_usd=self.cfg.budget.daily_usd)
-        from kits_runner import CliRunner
+        from .runner import HikidevRunner
 
-        return CliRunner()
+        return HikidevRunner(system_prompt_file=self.home.dot / "system-prompt.md")
 
     # ── 루프 ─────────────────────────────────────────────────
     async def run(self, *, once: bool = False) -> None:

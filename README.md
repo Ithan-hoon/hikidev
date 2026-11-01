@@ -16,18 +16,21 @@ hikidev는 개발 에이전트가 아니라 **한 명의 개발자**다. 집에 
 
 ## 빠른 시작 (호스트)
 
+**모든 명령은 이 레포 폴더(`hikidev/`)에서** 실행한다. `.env`가 여기 있고, `home/`은 걔 방이라 그 안에서 돌리지 않는다.
+
 ```bash
+cd hikidev
 uv sync
-uv run hikidev init ./home        # 기억 구조 + hikidev.yaml 생성
+uv run hikidev init home --name "ithan's hikidev"   # 기억 구조 + home/hikidev.yaml 생성
 cp .env.example .env              # 토큰은 home 밖(.env)에 — 걔 방 안에 주인 토큰을 두지 않는다
-# ./home/hikidev.yaml 편집 (디스코드 채널 ID 등)
-uv run hikidev run --home ./home --once   # 심장박동 1회
-uv run hikidev run --home ./home          # 계속
-uv run hikidev status --home ./home
-uv run hikidev log -f --home ./home
+# home/hikidev.yaml 편집 (디스코드 채널 ID 등), home/self.md 초기값
+uv run hikidev run --home home --once --log-level info   # 심장박동 1회 (실연동 확인)
+uv run hikidev run --home home                            # 계속
+uv run hikidev status --home home
+uv run hikidev log -f --home home
 ```
 
-`claude`가 PATH에 없으면 `.env`에 `CLAUDE_CLI_PATH`를 적는다.
+`claude`가 PATH에 없으면 `.env`에 `CLAUDE_CLI_PATH`를 적는다. Windows의 npm `claude.cmd` shim은 자동으로 그 안의 `claude.exe`로 바꿔 실행한다 (cmd.exe가 줄바꿈 있는 인자를 잘라먹기 때문).
 
 ## 명령
 
