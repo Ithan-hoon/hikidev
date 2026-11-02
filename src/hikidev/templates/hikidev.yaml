@@ -1,5 +1,6 @@
 # hikidev 설정. 토큰은 .env 에.
 name: "{name}"
+owner: "{owner}"            # hikidev 가 너를 부르는 이름
 runner: cli                 # cli | sdk (sdk 는 Phase 2)
 language: ko                # 일기·대화 언어
 timezone: Asia/Seoul

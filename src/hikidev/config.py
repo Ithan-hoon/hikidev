@@ -54,6 +54,8 @@ class NotionConfig:
 @dataclass(slots=True)
 class Config:
     name: str = "hikidev"
+    owner: str = ""
+    """hikidev 가 부르는 이름. 비면 "친구". 디스코드 ID 는 discord.owner_id"""
     runner: str = "cli"
     language: str = "ko"
     timezone: str = "Asia/Seoul"

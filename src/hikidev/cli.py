@@ -54,6 +54,8 @@ def cmd_init(args: argparse.Namespace) -> None:
         values["channel_id"] = args.channel_id
     if args.owner_id:
         values["owner_id"] = args.owner_id
+    if args.owner:
+        values["owner"] = args.owner
     made = home.init(name=args.name, values=values, force=args.force)
     print(f"hikidev home: {home.root}")
     for m in made:
@@ -215,6 +217,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--name", default="hikidev")
     p.add_argument("--channel-id", default="")
     p.add_argument("--owner-id", default="")
+    p.add_argument("--owner", default="", help="hikidev 가 너를 부르는 이름")
     p.add_argument("--force", action="store_true", help="기존 파일 덮어쓰기")
     p.set_defaults(fn=cmd_init)
 

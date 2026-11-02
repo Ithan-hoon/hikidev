@@ -212,3 +212,22 @@ async def test_lost_session_restarts_fresh(home: HikidevHome, cfg: Config) -> No
     assert home.current_session() == "s2"
     st = home.load_state()
     assert st.heartbeats == 2 and st.consecutive_failures == 0
+
+
+def test_relay_inbox_uses_owner_name(home: HikidevHome) -> None:
+    from types import SimpleNamespace
+
+    from hikidev.config import DiscordConfig
+    from hikidev.relay import Relay
+
+    r = Relay(home, DiscordConfig(channel_id="1", owner_id="9"), None, owner_name="ithan")
+    msg = SimpleNamespace(
+        author_name="ithan_alarm", author_id="9", content="hi", created_at="2026-11-03T00:00:00+09:00", id="m1"
+    )
+    p = r._on_inbox(msg) or home.unread_inbox()[-1]
+    assert "from: ithan\n" in p.read_text(encoding="utf-8")
+    other = SimpleNamespace(
+        author_name="guest", author_id="8", content="yo", created_at="2026-11-03T00:00:01+09:00", id="m2"
+    )
+    r._on_inbox(other)
+    assert any("from: guest\n" in q.read_text(encoding="utf-8") for q in home.unread_inbox())

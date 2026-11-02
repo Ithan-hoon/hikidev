@@ -53,7 +53,7 @@ class Orchestrator:
         self.home = home
         self.cfg = cfg
         self.runner = runner or self._default_runner()
-        self.relay = relay or Relay(home, cfg.discord, os.environ.get("DISCORD_BOT_TOKEN"))
+        self.relay = relay or Relay(home, cfg.discord, os.environ.get("DISCORD_BOT_TOKEN"), owner_name=cfg.owner)
         self._stop = asyncio.Event()
 
     def _default_runner(self) -> Any:
@@ -216,7 +216,7 @@ class Orchestrator:
         # 시스템 프롬프트는 파일로 (인자 길이·줄바꿈 안전), MCP 는 우리 mcp.json 만 (주인 claude.ai 커넥터 차단)
         sp_file = self.home.dot / "system-prompt.md"
         sp_file.write_text(
-            system_prompt(self.cfg.name, self.home.root, self.cfg.discord.owner_id, self.cfg.language), encoding="utf-8"
+            system_prompt(self.cfg.name, self.home.root, self.cfg.owner, self.cfg.language), encoding="utf-8"
         )
         opts = RunOptions(
             prompt=prompt,

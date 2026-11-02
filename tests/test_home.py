@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 from hikidev.home import HikidevHome, State
 
@@ -97,3 +98,11 @@ def test_projects_status(home: HikidevHome) -> None:
 def test_append_log(home: HikidevHome) -> None:
     home.append_log("2026-11-01", {"type": "x", "n": 1})
     assert home.log_path("2026-11-01").read_text(encoding="utf-8").strip() == '{"type": "x", "n": 1}'
+
+
+def test_init_owner_name_in_self_md(tmp_path: Path) -> None:
+    h = HikidevHome(tmp_path / "h")
+    h.init(name="x", values={"owner": "ithan"})
+    text = h.self_md.read_text(encoding="utf-8")
+    assert "ithan: 친구이자" in text and "{owner}" not in text
+    assert 'owner: "ithan"' in h.config_yaml.read_text(encoding="utf-8")

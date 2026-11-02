@@ -108,6 +108,7 @@ class HikidevHome:
             "language": "한국어",
             "channel_id": "",
             "owner_id": "",
+            "owner": "친구",
         }
         subs.update(values or {})
 

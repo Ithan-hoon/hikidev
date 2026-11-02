@@ -73,3 +73,12 @@ def test_emergency_handoff(home: HikidevHome) -> None:
     (home.projects_dir / "p2" / "NOTES.md").write_text("status: done", encoding="utf-8")
     h = emergency_handoff(home)
     assert "오늘 일기" in h and "projects/p1/NOTES.md" in h and "p2" not in h
+
+
+def test_owner_name_in_prompt(home: HikidevHome, tmp_path: Path) -> None:
+    p = tmp_path / "hikidev.yaml"
+    p.write_text("name: me\nowner: ithan\n", encoding="utf-8")
+    assert load_config(p).owner == "ithan"
+    s = system_prompt("me", home.root, "ithan", "ko")
+    assert "ithan의 말" in s and "주인" not in s
+    assert "친구의 말" in system_prompt("me", home.root, "", "ko")
