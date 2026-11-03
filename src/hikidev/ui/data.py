@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
-import markdown as _markdown
+from markdown_it import MarkdownIt
 
 from hikidev.config import Config
 from hikidev.home import Approval, HikidevHome, State
@@ -72,8 +72,13 @@ def fmt_k(n: int | float | None) -> str:
 
 
 # ── 마크다운 ─────────────────────────────────────────────────
+_md = MarkdownIt("commonmark", {"html": False, "breaks": False}).enable("table").enable("strikethrough")
+"""CommonMark: 문단 바로 아래 빈 줄 없이 오는 목록도 목록이다 (hikidev 는 그렇게 쓴다).
+html=False 라 원문의 태그는 이스케이프된다."""
+
+
 def render_md(text: str) -> str:
-    return _markdown.markdown(text, extensions=["tables", "fenced_code", "sane_lists"], output_format="html")
+    return _md.render(text)
 
 
 def strip_h1(text: str) -> str:

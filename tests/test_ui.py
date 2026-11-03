@@ -283,3 +283,12 @@ def test_cli_has_ui_subcommand() -> None:
 
     args = build_parser().parse_args(["ui", "--home", "h", "--port", "9000"])
     assert args.host == "0.0.0.0" and args.port == 9000
+
+
+def test_render_md_list_without_blank_line_and_table() -> None:
+    from hikidev.ui.data import render_md
+
+    h = render_md("관찰:\n- 하나\n- 둘\n\n| a | b |\n|---|---|\n| 1 | 2 |\n\n<script>x</script>")
+    assert "<ul>" in h and "<li>하나</li>" in h
+    assert "<table>" in h and "<td>1</td>" in h
+    assert "<script>" not in h and "&lt;script&gt;" in h
