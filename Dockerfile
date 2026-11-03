@@ -15,6 +15,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       git curl ca-certificates tzdata iptables util-linux openssh-client ripgrep jq \
+      build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=uv /uv /usr/local/bin/uv
