@@ -141,6 +141,8 @@ class Orchestrator:
             consecutive_failures=state.consecutive_failures,
             rate_limit_note=rate_note,
             context_used_ratio=ratio,
+            context_soft=self.cfg.session.context_soft,
+            context_hard=self.cfg.session.context_threshold,
             last_sleep_note=state.sleep_note,
         )
 

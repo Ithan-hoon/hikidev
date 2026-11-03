@@ -82,3 +82,18 @@ def test_owner_name_in_prompt(home: HikidevHome, tmp_path: Path) -> None:
     s = system_prompt("me", home.root, "ithan", "ko")
     assert "ithan의 말" in s and "주인" not in s
     assert "친구의 말" in system_prompt("me", home.root, "", "ko")
+
+
+def test_context_soft_hint_only_above_threshold() -> None:
+    base = dict(
+        now="2026-11-03 21:00",
+        weekday="월",
+        heartbeats_today=3,
+        active_hours_today=1.0,
+        max_active_hours=8,
+        consecutive_failures=0,
+    )
+    low = Signals(**base, context_used_ratio=0.5, context_soft=0.8, context_hard=0.9).render()
+    high = Signals(**base, context_used_ratio=0.83, context_soft=0.8, context_hard=0.9).render()
+    assert "new_chat" not in low
+    assert "90%" in high and "new_chat" in high

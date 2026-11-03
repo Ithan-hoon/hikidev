@@ -27,7 +27,10 @@ class BudgetConfig:
 @dataclass(slots=True)
 class SessionConfig:
     context_window_tokens: int = 200_000
-    context_threshold: float = 0.85
+    context_soft: float = 0.80
+    """넘으면 심장박동 신호에 '강제선이 가깝다' 한 줄 (결정은 hikidev)"""
+    context_threshold: float = 0.90
+    """넘으면 오케스트레이터가 강제 새 채팅 (비상)"""
     max_turns: int = 200
     timeout_minutes: int = 120
     permission_mode: str = "bypassPermissions"

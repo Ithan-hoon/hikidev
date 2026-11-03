@@ -16,7 +16,8 @@ schedule:
 
 session:
   context_window_tokens: 200000
-  context_threshold: 0.85   # 넘으면 강제 새 채팅 (인수인계 = 마지막 journal + NOTES)
+  context_soft: 0.80        # 넘으면 신호에 '단락 끝나면 new_chat 고려' 한 줄 (결정은 hikidev)
+  context_threshold: 0.90   # 넘으면 강제 새 채팅 (인수인계 = 마지막 journal + NOTES)
   max_turns: 200
   timeout_minutes: 120
   permission_mode: bypassPermissions   # 자기 방 안이니까

@@ -62,6 +62,8 @@ class Signals:
     consecutive_failures: int
     rate_limit_note: str | None = None
     context_used_ratio: float | None = None
+    context_soft: float | None = None
+    context_hard: float | None = None
     last_sleep_note: str | None = None
 
     def render(self) -> str:
@@ -71,7 +73,17 @@ class Signals:
             f"- 최근 연속 실패: {self.consecutive_failures}회",
         ]
         if self.context_used_ratio is not None:
-            lines.append(f"- 이 세션 컨텍스트 사용: 약 {self.context_used_ratio * 100:.0f}%")
+            line = f"- 이 세션 컨텍스트 사용: 약 {self.context_used_ratio * 100:.0f}%"
+            if (
+                self.context_soft is not None
+                and self.context_hard is not None
+                and self.context_used_ratio >= self.context_soft
+            ):
+                line += (
+                    f" — {self.context_hard * 100:.0f}% 를 넘으면 오케스트레이터가 강제로 새 채팅을 연다. "
+                    "지금 하던 단락이 끝나면 new_chat 으로 직접 넘어가는 편이 인수인계가 깔끔하다."
+                )
+            lines.append(line)
         if self.rate_limit_note:
             lines.append(f"- 한도: {self.rate_limit_note}")
         if self.last_sleep_note:

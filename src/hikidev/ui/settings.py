@@ -34,6 +34,7 @@ FIELDS: tuple[Field, ...] = (
     Field("schedule", "max_active_hours_per_day", "하루 가동 상한 (시간)", "float", "넘으면 자정까지 잔다"),
     Field("schedule", "rate_limit_fallback_minutes", "rate limit 대기 (분)", "int", "리셋 시각을 모를 때"),
     Field("session", "context_window_tokens", "컨텍스트 창 (토큰)", "int"),
+    Field("session", "context_soft", "새 채팅 권유 임계치", "float", "0~1. 넘으면 신호에 한 줄, 결정은 hikidev"),
     Field("session", "context_threshold", "강제 새 채팅 임계치", "float", "0~1. 넘으면 인수인계 후 새 채팅"),
     Field("session", "max_turns", "세션당 최대 턴", "int"),
     Field("session", "timeout_minutes", "세션 타임아웃 (분)", "int"),
