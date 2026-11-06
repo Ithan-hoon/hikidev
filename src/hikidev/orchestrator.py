@@ -27,7 +27,7 @@ log = logging.getLogger("hikidev")
 WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"]
 SESSION_ENV_BLANK = {"DISCORD_BOT_TOKEN": "", "DISCORD_WEBHOOK_URL": "", "NOTION_TOKEN": ""}
 """세션(hikidev)에게는 주인 쪽 토큰을 보여주지 않는다. GITHUB_TOKEN 은 걔 것이라 그대로."""
-FAILURE_STATUSES = ("process_died", "error", "orchestrator_error")
+FAILURE_STATUSES = ("process_died", "error", "orchestrator_error", "output_too_long")
 """연속 실패로 세는 상태. orchestrator_error 는 heartbeat() 자체의 예외 (예: 출력 한 줄이 너무 길어 파싱 실패)."""
 
 
@@ -187,6 +187,12 @@ class Orchestrator:
             reason = f"지난 세션이 {state.consecutive_failures}회 연속 비정상 종료라 새 채팅으로 넘겼다."
         elif state.last_status == "process_died":
             reason = "지난 세션 프로세스가 죽어서 새 채팅으로 넘겼다."
+        elif state.last_status == "output_too_long":
+            # 같은 세션을 이어가면 같은 줄에서 또 터진다 → 한 번에 새 채팅
+            reason = (
+                "지난 세션의 출력 한 줄이 너무 커서(큰 파일·이미지를 통째로 읽은 듯) "
+                "오케스트레이터가 끊고 새 채팅으로 넘겼다. 큰 파일은 일부만 읽거나 셸로 요약하는 편이 안전하다."
+            )
         if reason:
             self.home.set_session(None, reason="forced")
             return True, emergency_handoff(self.home), reason
@@ -320,7 +326,12 @@ class Orchestrator:
         else:
             state.consecutive_failures += 1
             code = summary.error.code if summary.error else "unknown"
-            state.last_status = "process_died" if code in ("exit_nonzero", "timeout", "spawn_failed") else "error"
+            if code in ("exit_nonzero", "timeout", "spawn_failed"):
+                state.last_status = "process_died"
+            elif code == "output_too_long":
+                state.last_status = "output_too_long"
+            else:
+                state.last_status = "error"
             log.warning("세션 오류 (%s): %s", code, summary.error.message if summary.error else "")
             if code == "not_logged_in":
                 log.error("claude 로그인이 안 되어 있다. 호스트에서 `claude login` 이 필요하다.")

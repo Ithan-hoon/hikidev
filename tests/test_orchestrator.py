@@ -258,3 +258,27 @@ async def test_orchestrator_error_backs_off_and_forces_new_after_max(home: Hikid
     await orch.heartbeat()
     assert runner.calls[1].resume is None and "연속 비정상 종료" in runner.calls[1].prompt
     assert home.current_session() == "s9" and home.load_state().consecutive_failures == 0
+
+
+async def test_output_too_long_forces_new_chat_immediately(home: HikidevHome, cfg: Config) -> None:
+    """kits v0.1.2: 출력 한 줄이 한도를 넘으면 Error(output_too_long). 같은 세션은 또 터지니 바로 새 채팅."""
+    runner = FakeRunner([_result("s1")], [], [_result("s3")])
+    orig = runner.run
+
+    async def run(opts):
+        async for e in orig(opts):
+            yield e
+        if len(runner.calls) == 2:
+            from kits_runner import Error
+
+            yield Error(message="출력 한 줄이 64MiB 를 넘었다", code="output_too_long")
+
+    runner.run = run  # type: ignore[method-assign]
+    orch = Orchestrator(home, cfg, runner=runner)
+    await orch.heartbeat()
+    await orch.heartbeat()
+    st = home.load_state()
+    assert st.consecutive_failures == 1 and st.last_status == "output_too_long"
+    await orch.heartbeat()
+    assert runner.calls[2].resume is None and "출력 한 줄이 너무 커서" in runner.calls[2].prompt
+    assert home.current_session() == "s3" and home.load_state().consecutive_failures == 0
