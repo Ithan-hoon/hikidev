@@ -45,7 +45,7 @@ ENV PATH="/opt/hikidev/.venv/bin:${PATH}" \
 COPY docker/entrypoint.sh /usr/local/bin/hikidev-entrypoint
 COPY docker/check-network.sh /usr/local/bin/hikidev-check-network
 RUN chmod +x /usr/local/bin/hikidev-entrypoint /usr/local/bin/hikidev-check-network \
-    && mkdir -p /home/hikidev/home && chown -R hikidev:hikidev /home/hikidev
+    && mkdir -p /home/hikidev/home /home/hikidev/.claude && chown -R hikidev:hikidev /home/hikidev
 
 # entrypoint 가 root 로 iptables 를 걸고 hikidev 사용자로 내려간다 (NET_ADMIN 필요)
 ENTRYPOINT ["hikidev-entrypoint"]
