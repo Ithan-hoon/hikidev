@@ -231,3 +231,30 @@ def test_relay_inbox_uses_owner_name(home: HikidevHome) -> None:
     )
     r._on_inbox(other)
     assert any("from: guest\n" in q.read_text(encoding="utf-8") for q in home.unread_inbox())
+
+
+async def test_orchestrator_error_backs_off_and_forces_new_after_max(home: HikidevHome, cfg: Config) -> None:
+    """heartbeat() 자체가 터지면(출력 파싱 실패 등) 곧바로 재시도하지 않고, 연속 실패가 쌓이면 새 채팅."""
+    runner = FakeRunner([_result("s1")], [_result("s9")])
+    orch = Orchestrator(home, cfg, runner=runner)
+    await orch.heartbeat()
+
+    async def boom(*a, **k):
+        raise ValueError("Separator is not found, and chunk exceed the limit")
+
+    orig = orch.heartbeat
+    orch.heartbeat = boom  # type: ignore[method-assign]
+    for _ in range(cfg.session.max_consecutive_failures):
+        await orch.run(once=True)
+    st = home.load_state()
+    assert st.consecutive_failures == cfg.session.max_consecutive_failures
+    assert st.last_status == "orchestrator_error"
+    assert st.last_heartbeat is not None
+    wake = orch.next_wake(st)
+    assert (wake - datetime.now().astimezone()).total_seconds() > cfg.schedule.heartbeat_minutes * 60 - 5
+    assert home.current_session() == "s1"
+
+    orch.heartbeat = orig  # type: ignore[method-assign]
+    await orch.heartbeat()
+    assert runner.calls[1].resume is None and "연속 비정상 종료" in runner.calls[1].prompt
+    assert home.current_session() == "s9" and home.load_state().consecutive_failures == 0

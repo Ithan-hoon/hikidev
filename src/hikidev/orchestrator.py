@@ -27,6 +27,8 @@ log = logging.getLogger("hikidev")
 WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"]
 SESSION_ENV_BLANK = {"DISCORD_BOT_TOKEN": "", "DISCORD_WEBHOOK_URL": "", "NOTION_TOKEN": ""}
 """세션(hikidev)에게는 주인 쪽 토큰을 보여주지 않는다. GITHUB_TOKEN 은 걔 것이라 그대로."""
+FAILURE_STATUSES = ("process_died", "error", "orchestrator_error")
+"""연속 실패로 세는 상태. orchestrator_error 는 heartbeat() 자체의 예외 (예: 출력 한 줄이 너무 길어 파싱 실패)."""
 
 
 def local_now() -> datetime:
@@ -76,16 +78,35 @@ class Orchestrator:
                         break
                 try:
                     await self.heartbeat()
-                except Exception:
+                except Exception as e:
                     log.exception("심장박동 실패")
-                    st = self.home.load_state()
-                    st.consecutive_failures += 1
-                    st.last_status = "orchestrator_error"
-                    self.home.save_state(st)
+                    self._record_orchestrator_error(e)
                 if once:
                     break
         finally:
             await self.relay.stop()
+
+    def _record_orchestrator_error(self, exc: BaseException) -> None:
+        """heartbeat() 자체가 터졌을 때. 곧바로 같은 세션을 다시 돌리면 같은 줄에서 또 터져 초 단위 루프가 되므로
+        last_heartbeat 를 찍어 기본 심장박동 주기만큼은 쉬게 하고, 연속 실패로 센다 (max 넘으면 새 채팅)."""
+        now = local_now()
+        st = self.home.load_state()
+        self._roll_date(st, now.strftime("%Y-%m-%d"))
+        st.consecutive_failures += 1
+        st.last_status = "orchestrator_error"
+        st.last_heartbeat = now_iso()
+        st.sleep_until = None
+        self.home.save_state(st)
+        self.home.append_log(
+            now.strftime("%Y-%m-%d"),
+            {
+                "type": "hikidev",
+                "event": "orchestrator_error",
+                "at": now_iso(),
+                "error": f"{type(exc).__name__}: {exc}",
+                "consecutive_failures": st.consecutive_failures,
+            },
+        )
 
     def stop(self) -> None:
         self._stop.set()
@@ -162,9 +183,7 @@ class Orchestrator:
                 f"지난 세션 컨텍스트가 {ratio * 100:.0f}% 라 오케스트레이터가 새 채팅으로 넘겼다 "
                 f"(임계 {s.context_threshold * 100:.0f}%)."
             )
-        elif (
-            state.last_status in ("process_died", "error") and state.consecutive_failures >= s.max_consecutive_failures
-        ):
+        elif state.last_status in FAILURE_STATUSES and state.consecutive_failures >= s.max_consecutive_failures:
             reason = f"지난 세션이 {state.consecutive_failures}회 연속 비정상 종료라 새 채팅으로 넘겼다."
         elif state.last_status == "process_died":
             reason = "지난 세션 프로세스가 죽어서 새 채팅으로 넘겼다."
