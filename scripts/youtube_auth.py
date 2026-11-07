@@ -22,6 +22,9 @@ NO_REFRESH_HINT = (
 
 
 def main(argv: list[str] | None = None) -> int:
+    for stream in (sys.stdout, sys.stderr):  # Windows cp949 콘솔에서 한글·기호가 깨지지 않게
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("client_secret", help="구글 콘솔에서 받은 OAuth 데스크톱 클라이언트 JSON 경로")
     ap.add_argument("--scopes", nargs="*", default=[], help=f"추가 범위 (기본 {UPLOAD_SCOPE})")
