@@ -106,3 +106,15 @@ def test_init_owner_name_in_self_md(tmp_path: Path) -> None:
     text = h.self_md.read_text(encoding="utf-8")
     assert "ithan: 친구이자" in text and "{owner}" not in text
     assert 'owner: "ithan"' in h.config_yaml.read_text(encoding="utf-8")
+
+
+def test_inbox_attachments(home: HikidevHome) -> None:
+    urls = ["https://cdn.discordapp.com/attachments/1/2/sketch.jpg", "https://cdn.discordapp.com/attachments/1/3/b.png"]
+    p = home.write_inbox(
+        author="ithan", content="손그림", at="2026-11-07T10:00:00+09:00", msg_id="a1", attachments=urls
+    )
+    text = p.read_text(encoding="utf-8")
+    assert text.startswith("---\nfrom: ithan\nat: 2026-11-07T10:00:00+09:00\n---\n손그림\n")
+    assert "\n첨부:\n- " + urls[0] + "\n- " + urls[1] + "\n" in text
+    q = home.write_inbox(author="ithan", content="글만", at="2026-11-07T10:00:01+09:00", msg_id="a2", attachments=[])
+    assert "첨부:" not in q.read_text(encoding="utf-8")

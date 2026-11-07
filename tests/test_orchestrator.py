@@ -282,3 +282,31 @@ async def test_output_too_long_forces_new_chat_immediately(home: HikidevHome, cf
     await orch.heartbeat()
     assert runner.calls[2].resume is None and "출력 한 줄이 너무 커서" in runner.calls[2].prompt
     assert home.current_session() == "s3" and home.load_state().consecutive_failures == 0
+
+
+def test_relay_inbox_passes_attachments(home: HikidevHome) -> None:
+    from types import SimpleNamespace
+
+    from hikidev.config import DiscordConfig
+    from hikidev.relay import Relay
+
+    r = Relay(home, DiscordConfig(channel_id="1", owner_id="9"), None, owner_name="ithan")
+    url = "https://cdn.discordapp.com/attachments/1/2/sketch.jpg"
+    r._on_inbox(
+        SimpleNamespace(
+            author_name="ithan",
+            author_id="9",
+            content="이거",
+            created_at="2026-11-07T00:00:00+09:00",
+            id="m1",
+            attachments=[url],
+        )
+    )
+    assert f"첨부:\n- {url}\n" in home.unread_inbox()[-1].read_text(encoding="utf-8")
+    # attachments 필드가 없는 옛 킷 메시지도 그대로 동작
+    r._on_inbox(
+        SimpleNamespace(
+            author_name="ithan", author_id="9", content="글", created_at="2026-11-07T00:00:01+09:00", id="m2"
+        )
+    )
+    assert "첨부:" not in home.unread_inbox()[-1].read_text(encoding="utf-8")

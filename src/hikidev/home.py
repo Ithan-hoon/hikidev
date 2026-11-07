@@ -230,13 +230,25 @@ class HikidevHome:
         _write_json(self.sessions_json, data)
 
     # ── inbox (디스코드 → 파일) ───────────────────────────────
-    def write_inbox(self, *, author: str, content: str, at: str | None = None, msg_id: str | None = None) -> Path:
+    def write_inbox(
+        self,
+        *,
+        author: str,
+        content: str,
+        at: str | None = None,
+        msg_id: str | None = None,
+        attachments: list[str] | None = None,
+    ) -> Path:
+        """디스코드 메시지 한 건을 inbox/*.md 로. 첨부(사진 등)는 URL 만 `첨부:` 섹션에 적는다 — 받을지는 걔 판단."""
         self.inbox_dir.mkdir(parents=True, exist_ok=True)
         at = at or now_iso()
         stamp = re.sub(r"[^0-9T]", "", at)[:15]
         mid = msg_id or uuid.uuid4().hex[:6]
         path = self.inbox_dir / f"{stamp}-{mid}.md"
-        path.write_text(f"---\nfrom: {author}\nat: {at}\n---\n{content}\n", encoding="utf-8")
+        body = f"---\nfrom: {author}\nat: {at}\n---\n{content}\n"
+        if attachments:
+            body += "\n첨부:\n" + "".join(f"- {u}\n" for u in attachments)
+        path.write_text(body, encoding="utf-8")
         return path
 
     def unread_inbox(self) -> list[Path]:

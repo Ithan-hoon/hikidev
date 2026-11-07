@@ -61,8 +61,11 @@ class Relay:
         author = m.author_name or m.author_id
         if self.owner_name and self.cfg.owner_id and str(m.author_id) == self.cfg.owner_id:
             author = self.owner_name
-        p = self.home.write_inbox(author=author, content=m.content, at=m.created_at, msg_id=m.id)
-        log.info("inbox ← %s: %s", m.author_name, p.name)
+        attachments = [str(u) for u in (getattr(m, "attachments", None) or [])]  # 옛 킷엔 필드가 없을 수 있다
+        p = self.home.write_inbox(
+            author=author, content=m.content, at=m.created_at, msg_id=m.id, attachments=attachments
+        )
+        log.info("inbox ← %s: %s%s", m.author_name, p.name, f" (첨부 {len(attachments)})" if attachments else "")
 
     # ── notify / approvals: 파일 → 디스코드 ───────────────────
     async def notify(self, message: str) -> None:

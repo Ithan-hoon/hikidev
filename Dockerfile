@@ -14,7 +14,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     UV_LINK_MODE=copy
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      git curl ca-certificates tzdata iptables util-linux openssh-client ripgrep jq \
+      git curl ca-certificates tzdata iptables util-linux procps openssh-client ripgrep jq \
       build-essential \
     && rm -rf /var/lib/apt/lists/*
 
