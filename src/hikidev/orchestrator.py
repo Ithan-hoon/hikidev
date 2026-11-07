@@ -26,7 +26,7 @@ from .relay import Relay
 log = logging.getLogger("hikidev")
 WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"]
 SESSION_ENV_BLANK = {"DISCORD_BOT_TOKEN": "", "DISCORD_WEBHOOK_URL": "", "NOTION_TOKEN": ""}
-"""세션(hikidev)에게는 주인 쪽 토큰을 보여주지 않는다. GITHUB_TOKEN 은 걔 것이라 그대로."""
+"""세션(hikidev)에게는 주인 쪽 토큰을 보여주지 않는다. GITHUB_TOKEN 과 YOUTUBE_* 는 걔 것이라 그대로."""
 FAILURE_STATUSES = ("process_died", "error", "orchestrator_error", "output_too_long")
 """연속 실패로 세는 상태. orchestrator_error 는 heartbeat() 자체의 예외 (예: 출력 한 줄이 너무 길어 파싱 실패)."""
 
