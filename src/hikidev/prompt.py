@@ -70,6 +70,8 @@ class Signals:
     context_soft: float | None = None
     context_hard: float | None = None
     last_sleep_note: str | None = None
+    room_replaced_at: str | None = None
+    """지난 박동 이후 컨테이너가 교체됐으면 그 시작 시각"""
 
     def render(self) -> str:
         lines = [
@@ -91,6 +93,11 @@ class Signals:
             lines.append(line)
         if self.rate_limit_note:
             lines.append(f"- 한도: {self.rate_limit_note}")
+        if self.room_replaced_at:
+            lines.append(
+                f"- 지난 박동 이후 방(컨테이너)이 교체됐다 ({self.room_replaced_at}). "
+                "home/ 과 세션 밖의 설정·설치물은 초기화됐을 수 있다."
+            )
         if self.last_sleep_note:
             lines.append(f"- 잠들기 전 메모: {self.last_sleep_note}")
         return "\n".join(lines)

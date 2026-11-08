@@ -21,6 +21,11 @@ if [ "$(id -u)" = "0" ]; then
   chown hikidev:hikidev /home/hikidev/home 2>/dev/null || true
   # 세션 저장소(named volume). 빈 볼륨을 docker 가 root 로 만들었을 수 있으니 최상위만 넘겨준다 (내용물은 걔가 만든 거라 이미 걔 것)
   mkdir -p /home/hikidev/.claude && chown hikidev:hikidev /home/hikidev/.claude 2>/dev/null || true
+  # 이 컨테이너의 정체를 남긴다. 오케스트레이터가 지난 박동의 값과 비교해 "방이 교체됐다"를 다음 박동 신호에 적는다 (DESIGN §16)
+  BOOT_DIR="${HIKIDEV_HOME:-/home/hikidev/home}/.hikidev"
+  mkdir -p "$BOOT_DIR" \
+    && printf '{"container": "%s", "started_at": "%s"}\n' "${HOSTNAME:-$(cat /etc/hostname 2>/dev/null || echo unknown)}" "$(date -Iseconds)" > "$BOOT_DIR/boot.json" \
+    && chown hikidev:hikidev "$BOOT_DIR" "$BOOT_DIR/boot.json" 2>/dev/null || true
   # git 전역 설정(user.name 등)은 home/ 안에 둔다 — /home/hikidev 는 overlay 라 교체 때 ~/.gitconfig 가 사라진다 (2026-11-08)
   exec setpriv --reuid=hikidev --regid=hikidev --init-groups --reset-env \
     env HOME=/home/hikidev PATH="$PATH" HIKIDEV_HOME="${HIKIDEV_HOME:-/home/hikidev/home}" \

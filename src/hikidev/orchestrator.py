@@ -149,7 +149,22 @@ class Orchestrator:
             state.active_seconds = 0
             state.heartbeats = 0
 
-    def _signals(self, state: State, now: datetime, rate_note: str | None = None) -> Signals:
+    def _room_replaced(self, state: State) -> str | None:
+        """컨테이너가 지난 박동 이후 교체됐으면 시작 시각을 돌려주고 state.boot_id 를 갱신한다.
+
+        호스트 실행(boot.json 없음)은 None.
+        """
+        boot = self.home.read_boot()
+        if boot is None:
+            return None
+        cid = str(boot["container"])
+        replaced = state.last_heartbeat is not None and state.boot_id != cid
+        state.boot_id = cid
+        return str(boot.get("started_at") or "시각 모름") if replaced else None
+
+    def _signals(
+        self, state: State, now: datetime, rate_note: str | None = None, room_replaced_at: str | None = None
+    ) -> Signals:
         ratio = None
         if state.last_context_tokens and self.home.current_session():
             ratio = state.last_context_tokens / self.cfg.session.context_window_tokens
@@ -165,6 +180,7 @@ class Orchestrator:
             context_soft=self.cfg.session.context_soft,
             context_hard=self.cfg.session.context_threshold,
             last_sleep_note=state.sleep_note,
+            room_replaced_at=room_replaced_at,
         )
 
     def _decide_session(self, state: State, control: dict[str, Any]) -> tuple[bool, str | None, str | None]:
@@ -228,10 +244,18 @@ class Orchestrator:
             return None
 
         control = self.home.read_control(clear=True)
+        prev_boot = state.boot_id
+        replaced_at = self._room_replaced(state)
+        if state.boot_id != prev_boot:
+            self.home.save_state(state)  # 사후 처리가 state 를 다시 읽으니 지금 적는다. 박동이 실패해도 알림은 한 번만
+        if replaced_at:
+            self.home.append_log(
+                today, {"type": "hikidev", "event": "room_replaced", "at": now_iso(), "started_at": replaced_at}
+            )
         new_session, handoff, forced = self._decide_session(state, control)
         resume = None if new_session else self.home.current_session()
         ctx = HeartbeatContext(
-            signals=self._signals(state, now),
+            signals=self._signals(state, now, room_replaced_at=replaced_at),
             new_session=new_session,
             inbox_files=self.home.unread_inbox(),
             decisions=self.home.unseen_decisions(mark=False),

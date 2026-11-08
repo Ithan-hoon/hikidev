@@ -52,6 +52,8 @@ class State:
     sleep_until: str | None = None
     sleep_note: str | None = None
     session_turns: int = 0
+    boot_id: str | None = None
+    """마지막 박동 때의 컨테이너 ID (.hikidev/boot.json). 바뀌면 방이 교체된 것"""
 
 
 @dataclass(slots=True)
@@ -84,6 +86,8 @@ class HikidevHome:
         self.state_json = self.dot / "state.json"
         self.outbox_jsonl = self.dot / "outbox.jsonl"
         self.control_json = self.dot / "control.json"
+        self.boot_json = self.dot / "boot.json"
+        """컨테이너 entrypoint 가 쓰는 {container, started_at}. 호스트 실행엔 없다"""
         self.inbox_jsonl = self.dot / "inbox.jsonl"
         self.mcp_json = self.dot / "mcp.json"
         self.notion_state_json = self.dot / "notion-mirror.json"
@@ -145,6 +149,10 @@ class HikidevHome:
 
     def save_state(self, state: State) -> None:
         _write_json(self.state_json, asdict(state))
+
+    def read_boot(self) -> dict[str, Any] | None:
+        d = _read_json(self.boot_json, None)
+        return d if isinstance(d, dict) and d.get("container") else None
 
     # ── approvals ────────────────────────────────────────────
     def load_approvals(self) -> list[Approval]:

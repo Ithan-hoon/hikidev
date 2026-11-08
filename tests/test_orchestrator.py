@@ -339,3 +339,34 @@ async def test_lost_session_needs_no_assistant_reply(home: HikidevHome, cfg: Con
     assert s is not None and s.status == "error"
     assert home.current_session() == "s1" and home.load_state().consecutive_failures == 1
     assert len(runner.calls) == 2  # 새 세션으로 재시도하지 않았다
+
+
+async def test_room_replaced_signal_only_after_container_changes(home: HikidevHome, cfg: Config) -> None:
+    """boot.json 의 컨테이너 ID 가 지난 박동과 다르면 다음 박동 신호에 한 줄. 호스트(boot.json 없음)·첫 박동·같은 컨테이너엔 없다."""
+    runner = FakeRunner([_result("s1")], [_result("s1")], [_result("s1")], [_result("s1")])
+    orch = Orchestrator(home, cfg, runner=runner)
+    await orch.heartbeat()  # 호스트 실행: boot.json 없음
+    assert "교체됐다" not in runner.calls[0].prompt and home.load_state().boot_id is None
+
+    home.boot_json.write_text(json.dumps({"container": "aaa111", "started_at": "2026-11-09T07:00:00+09:00"}))
+    await orch.heartbeat()  # 컨테이너로 옮겨 온 첫 박동 — 지난 박동이 있으니 교체로 본다
+    assert "방(컨테이너)이 교체됐다 (2026-11-09T07:00:00+09:00)" in runner.calls[1].prompt
+    assert home.load_state().boot_id == "aaa111"
+
+    await orch.heartbeat()  # 같은 컨테이너
+    assert "교체됐다" not in runner.calls[2].prompt
+
+    home.boot_json.write_text(json.dumps({"container": "bbb222", "started_at": "2026-11-09T08:00:00+09:00"}))
+    await orch.heartbeat()
+    assert "교체됐다 (2026-11-09T08:00:00+09:00)" in runner.calls[3].prompt
+    day = datetime.now().strftime("%Y-%m-%d")
+    events = [json.loads(x).get("event") for x in home.log_path(day).read_text(encoding="utf-8").splitlines()]
+    assert events.count("room_replaced") == 2
+
+
+async def test_room_replaced_not_signaled_on_very_first_heartbeat(home: HikidevHome, cfg: Config) -> None:
+    home.boot_json.write_text(json.dumps({"container": "aaa111", "started_at": "2026-11-09T07:00:00+09:00"}))
+    runner = FakeRunner([_result("s1")])
+    orch = Orchestrator(home, cfg, runner=runner)
+    await orch.heartbeat()
+    assert "교체됐다" not in runner.calls[0].prompt and home.load_state().boot_id == "aaa111"
