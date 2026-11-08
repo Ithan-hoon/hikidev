@@ -273,12 +273,21 @@ class Orchestrator:
         log.info("심장박동 #%d %s", state.heartbeats + 1, "새 세션" if new_session else f"이어서 {resume}")
 
         last_ctx: dict[str, int] = {}
+        seen = {"assistant": 0, "turns": 0}
 
         def on_event(e: Any) -> None:
             if isinstance(e, Raw):
                 self.home.append_log(today, e.json)
                 if (n := context_tokens_from_raw(e.json)) is not None:
                     last_ctx["tokens"] = n
+                if e.json.get("type") == "assistant":
+                    seen["assistant"] += 1
+                elif e.json.get("type") == "result":
+                    # Monitor 같은 백그라운드 깨움은 한 박동에 result 를 여러 개 낸다.
+                    # num_turns 는 result 마다 따로 세므로 합친다
+                    n_turns = e.json.get("num_turns")
+                    if isinstance(n_turns, int):
+                        seen["turns"] += n_turns
             elif isinstance(e, SessionId):
                 if self.home.current_session() != e.session_id:
                     self.home.set_session(e.session_id, reason="new")
@@ -293,7 +302,12 @@ class Orchestrator:
             elapsed = time.monotonic() - t0
             await self.relay.stop_polling()
 
-        lost = summary.error is not None and summary.error.code == "api_error" and not summary.num_turns
+        # 러너 요약의 num_turns 는 마지막 result 것이라(킷 v0.1.2) 우리가 합친 값으로 바꾼다. 비용은 누적값이라 그대로
+        if seen["turns"]:
+            summary.num_turns = seen["turns"]
+        # "세션을 잃었다" = 이어가려 했는데 api_error 로 끝났고 assistant 응답이 하나도 없었다.
+        # (턴 수만 보면 result 가 여러 개일 때 마지막 값에 속는다)
+        lost = summary.error is not None and summary.error.code == "api_error" and not seen["assistant"]
         if resume and summary.status == "error" and lost:
             # 다른 머신(호스트↔컨테이너)으로 옮기면 세션 기록이 없어 resume 이 즉시 실패한다 → 새 세션으로 한 번 더
             log.warning("세션 %s 을(를) 이어갈 수 없다 — 새 세션으로 다시 시작", resume)

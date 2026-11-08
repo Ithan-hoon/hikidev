@@ -310,3 +310,32 @@ def test_relay_inbox_passes_attachments(home: HikidevHome) -> None:
         )
     )
     assert "첨부:" not in home.unread_inbox()[-1].read_text(encoding="utf-8")
+
+
+async def test_multiple_results_sum_turns(home: HikidevHome, cfg: Config) -> None:
+    """Monitor 같은 백그라운드 깨움은 한 박동에 result 를 여러 개 낸다. turns 는 합, 비용은 마지막(누적)."""
+    r1 = {**_result("s1"), "num_turns": 34, "total_cost_usd": 2.27}
+    r2 = {**_result("s1"), "num_turns": 1, "total_cost_usd": 2.29}
+    r3 = {**_result("s1"), "num_turns": 4, "total_cost_usd": 2.59}
+    runner = FakeRunner([_assistant("a"), r1, _assistant("b"), r2, _assistant("c"), r3])
+    orch = Orchestrator(home, cfg, runner=runner)
+    s = await orch.heartbeat()
+    assert s is not None and s.num_turns == 39 and s.total_cost_usd == 2.59
+    end = [
+        json.loads(line)
+        for line in home.log_path(datetime.now().strftime("%Y-%m-%d")).read_text(encoding="utf-8").splitlines()
+    ]
+    end = [e for e in end if e.get("event") == "heartbeat_end"][-1]
+    assert end["turns"] == 39
+
+
+async def test_lost_session_needs_no_assistant_reply(home: HikidevHome, cfg: Config) -> None:
+    """api_error 로 끝났어도 assistant 응답이 있었으면 '세션 잃음' 이 아니다 — 같은 세션을 유지한다."""
+    err = {**_result("s1"), "subtype": "error_during_execution", "is_error": True, "result": "", "num_turns": 0}
+    runner = FakeRunner([_result("s1")], [_assistant("일하다가"), err], [_result("s1")])
+    orch = Orchestrator(home, cfg, runner=runner)
+    await orch.heartbeat()
+    s = await orch.heartbeat()
+    assert s is not None and s.status == "error"
+    assert home.current_session() == "s1" and home.load_state().consecutive_failures == 1
+    assert len(runner.calls) == 2  # 새 세션으로 재시도하지 않았다
