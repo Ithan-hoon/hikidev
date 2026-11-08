@@ -21,9 +21,11 @@ if [ "$(id -u)" = "0" ]; then
   chown hikidev:hikidev /home/hikidev/home 2>/dev/null || true
   # 세션 저장소(named volume). 빈 볼륨을 docker 가 root 로 만들었을 수 있으니 최상위만 넘겨준다 (내용물은 걔가 만든 거라 이미 걔 것)
   mkdir -p /home/hikidev/.claude && chown hikidev:hikidev /home/hikidev/.claude 2>/dev/null || true
+  # git 전역 설정(user.name 등)은 home/ 안에 둔다 — /home/hikidev 는 overlay 라 교체 때 ~/.gitconfig 가 사라진다 (2026-11-08)
   exec setpriv --reuid=hikidev --regid=hikidev --init-groups --reset-env \
     env HOME=/home/hikidev PATH="$PATH" HIKIDEV_HOME="${HIKIDEV_HOME:-/home/hikidev/home}" \
         CLAUDE_CLI_PATH=claude PYTHONIOENCODING=utf-8 \
+        GIT_CONFIG_GLOBAL=/home/hikidev/home/.gitconfig \
         $(env | grep -E '^(DISCORD_|NOTION_|GITHUB_|CLAUDE_CODE_|ANTHROPIC_|HIKIDEV_|YOUTUBE_|TZ=)' | sed 's/^/ /') \
     "$@"
 fi

@@ -45,7 +45,10 @@ ENV PATH="/opt/hikidev/.venv/bin:${PATH}" \
 COPY docker/entrypoint.sh /usr/local/bin/hikidev-entrypoint
 COPY docker/check-network.sh /usr/local/bin/hikidev-check-network
 RUN chmod +x /usr/local/bin/hikidev-entrypoint /usr/local/bin/hikidev-check-network \
-    && mkdir -p /home/hikidev/home /home/hikidev/.claude && chown -R hikidev:hikidev /home/hikidev
+    && mkdir -p /home/hikidev/home /home/hikidev/.claude && chown -R hikidev:hikidev /home/hikidev \
+    && git config --system safe.directory '*'
+# ↑ home/ 에 호스트(root 소유)에서 만든 git 레포가 있어도 "dubious ownership" 이 안 뜨게. /etc/gitconfig 는 이미지 안이라
+#   컨테이너를 교체해도 남는다. 컨테이너 안은 걔 혼자라 '*' 의 보안 의미는 없다 (DESIGN §16, 2026-11-08)
 
 # entrypoint 가 root 로 iptables 를 걸고 hikidev 사용자로 내려간다 (NET_ADMIN 필요)
 ENTRYPOINT ["hikidev-entrypoint"]
