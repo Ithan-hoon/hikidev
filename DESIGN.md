@@ -356,6 +356,7 @@ supervisor는 작고 절대 안 바뀌는 프로세스. pm2 또는 Windows 작�
 - ~~킷 레포 이름·배포 방식~~ → 해결: `Ithan-hoon/kits` (private), uv 워크스페이스, 패키지명 `kits_*`
 - 컨텍스트 사용량 임계치 → 연성 80% / 경성 90%로 확정 (2026-11-03, §9). 심장박동 주기·하루 가동 시간 기본값은 계속 관찰 (hikidev가 sleep_until로 직접 정하고 있어 기본값의 영향이 작음)
 - 컨테이너의 `~/.claude` 세션 저장소는 **named volume 으로 유지한다** (2026-11-06 확정). 전에는 `home/` 밖이라 재빌드·재생성마다 새 세션이었고(2026-11-02 관찰), 11-06 실패 루프 수정 재빌드 때 "세션 살리기"로 정해 놓고 이 사실을 셋 다 놓쳐 hikidev 가 주인 피드백과 자기 계획을 잃었다. 재빌드는 앞으로(패치 체계) 잦아지니 세션은 컨테이너 수명과 분리한다. `home/` 만 호스트에 보이는 원칙은 유지 — 호스트 bind 가 아니라 docker named volume.
+- 컨테이너 교체 때 `home/`·`~/.claude` 밖은 전부 초기화된다 (2026-11-08 확인: 17:03 재생성으로 `~/.gitconfig` 가 사라져 hikidev 가 "squish 가 root 소유로 바뀌었다" 고 오진). 환경 설정은 이미지에(git safe.directory 는 `/etc/gitconfig`), hikidev 가 쓴 설정은 `home/` 안에(`GIT_CONFIG_GLOBAL=home/.gitconfig`). `~/.config`·`~/.local` 은 휘발이며 이 사실을 시스템 프롬프트 "네 방" 에 한 줄로 알려 준다. 재빌드·재생성 전에는 운영방이 디스코드로 미리 알린다.
 - (Phase 2) self.md 를 UI나 디스코드로 설정하는 방법 — 지금은 파일로만 (2026-11-01 주인 질문)
 - 컨테이너 claude 로그인: `claude setup-token` → `.env` `CLAUDE_CODE_OAUTH_TOKEN` 로 확정 (2026-11-01). API 키는 안 씀
 - hikidev 일기 → "📄 Progress Diary" DB로 확정, `kits_notion` 미러 동작 확인. 프로젝트·컨디션 컬럼 추가 여부는 본체방에서
