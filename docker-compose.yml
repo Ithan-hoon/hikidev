@@ -25,6 +25,7 @@ services:
     dns:                           # 홈 라우터(사설 IP) DNS 를 안 타게 공개 DNS 로
       - 1.1.1.1
       - 8.8.8.8
+    init: true                   # tini 를 PID 1 로. supervise 가 PID 1 이면 claude 가 띄운 손자 프로세스가 좀비로 남는다 (2026-11-11 운영방 관찰)
     restart: unless-stopped
     stop_grace_period: 30s
 
